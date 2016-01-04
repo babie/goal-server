@@ -13,7 +13,7 @@ defmodule GoalServer.ChannelCase do
   of the test unless the test case is marked as async.
   """
 
-  use ExUnit.CaseTemplate
+  use PowerAssert.CaseTemplate
 
   using do
     quote do

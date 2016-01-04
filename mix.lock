@@ -21,5 +21,6 @@
   "plug": {:hex, :plug, "1.0.3"},
   "poison": {:hex, :poison, "1.5.0"},
   "poolboy": {:hex, :poolboy, "1.5.1"},
+  "power_assert": {:hex, :power_assert, "0.0.6"},
   "ranch": {:hex, :ranch, "1.2.0"},
   "ssl_verify_hostname": {:hex, :ssl_verify_hostname, "1.0.5"}}
