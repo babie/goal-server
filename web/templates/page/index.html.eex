@@ -3,6 +3,15 @@
   <p class="lead">A productive web framework that<br />does not compromise speed and maintainability.</p>
 </div>
 
+<div class="row">
+  <div class="col-xs-12">
+    <a class="btn btn-primary btn-lg" href="<%= auth_path @conn, :index, "twitter" %>">Sign in with Twitter</a>
+    <%= if @conn.assigns[:current_user] do %>
+      <h2>Welcome, <%= @conn.assigns[:current_user].nick %>.</h2>
+    <% end %>
+  </div>
+</div>
+
 <div class="row marketing">
   <div class="col-lg-6">
     <h4>Resources</h4>

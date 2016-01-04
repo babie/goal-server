@@ -7,6 +7,12 @@ defmodule GoalServer.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    # for user authentication
+    plug :assign_current_user
+  end
+
+  defp assign_current_user(conn, _) do
+    assign(conn, :current_user, get_session(conn, :current_user))
   end
 
   pipeline :api do
@@ -17,6 +23,14 @@ defmodule GoalServer.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    resources "/users", UserController
+  end
+
+  scope "/auth", GoalServer do
+    pipe_through :browser
+
+    get "/:provider", AuthController, :index
+    get "/:provider/callback", AuthController, :callback
   end
 
   # Other scopes may use custom stacks.

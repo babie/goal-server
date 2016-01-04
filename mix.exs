@@ -42,7 +42,9 @@ defmodule GoalServer.Mixfile do
       {:cowboy, "~> 1.0"},
       {:mix_test_watch, "~> 0.2", only: :dev},
       {:excoveralls, "~> 0.4", only: :test},
-      {:power_assert, "~> 0.0.6", only: :test}
+      {:power_assert, "~> 0.0.6", only: :test},
+      {:oauth, github: "tim/erlang-oauth"},
+      {:extwitter, "~> 0.6"}
     ]
   end
 
