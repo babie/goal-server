@@ -1,9 +1,11 @@
 defmodule GoalServer.UserControllerTest do
   use GoalServer.ConnCase
+  use GoalServer.ControllerHelper, controller: GoalServer.UserController
 
   alias GoalServer.User
   @valid_attrs %{nick: "some content"}
   @invalid_attrs %{}
+  @valid_tmp_user %{nick: "some content", auth: %{oauth_token: "oauth_token", oauth_token_secret: "oauth_token_secret", provider: "twitter", uid: "long_long_some_content"}}
 
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, user_path(conn, :index)
@@ -11,7 +13,11 @@ defmodule GoalServer.UserControllerTest do
   end
 
   test "renders form for new resources", %{conn: conn} do
-    conn = get conn, user_path(conn, :new)
+    conn = conn
+      |> with_session_and_flash
+      |> put_session(:tmp_user, @valid_tmp_user)
+      |> action(:new, %{})
+    #conn = get conn, user_path(conn, :new)
     assert html_response(conn, 200) =~ "New user"
   end
 

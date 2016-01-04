@@ -11,7 +11,7 @@ defmodule GoalServer.UserController do
   end
 
   def new(conn, _params) do
-    changeset = User.changeset(%User{})
+    changeset = User.changeset(%User{}, get_session(conn, :tmp_user))
     render(conn, "new.html", changeset: changeset)
   end
 
