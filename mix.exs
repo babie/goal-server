@@ -9,6 +9,8 @@ defmodule GoalServer.Mixfile do
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     test_coverage: [tool: ExCoveralls],
+     preferred_cli_env: ["coveralls": :test, "coveralls.detail": :test, "coveralls.post": :test],
      aliases: aliases,
      deps: deps]
   end
@@ -38,7 +40,8 @@ defmodule GoalServer.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.9"},
       {:cowboy, "~> 1.0"},
-      {:mix_test_watch, "~> 0.2", only: :dev}
+      {:mix_test_watch, "~> 0.2", only: :dev},
+      {:excoveralls, "~> 0.4", only: :test}
     ]
   end
 
