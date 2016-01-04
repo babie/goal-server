@@ -3,7 +3,9 @@
   "connection": {:hex, :connection, "1.0.2"},
   "cowboy": {:hex, :cowboy, "1.0.4"},
   "cowlib": {:hex, :cowlib, "1.0.2"},
+  "cryptex": {:hex, :cryptex, "0.0.1"},
   "decimal": {:hex, :decimal, "1.1.1"},
+  "earmark": {:hex, :earmark, "0.2.0"},
   "ecto": {:hex, :ecto, "1.1.1"},
   "excoveralls": {:hex, :excoveralls, "0.4.3"},
   "exjsx": {:hex, :exjsx, "3.2.0"},
@@ -26,6 +28,7 @@
   "poolboy": {:hex, :poolboy, "1.5.1"},
   "power_assert": {:hex, :power_assert, "0.0.6"},
   "ranch": {:hex, :ranch, "1.2.0"},
+  "safetybox": {:hex, :safetybox, "0.1.2"},
   "ssl_verify_hostname": {:hex, :ssl_verify_hostname, "1.0.5"},
   "timex": {:hex, :timex, "0.19.5"},
   "tzdata": {:hex, :tzdata, "0.5.6"}}

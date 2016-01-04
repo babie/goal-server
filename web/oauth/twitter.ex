@@ -18,7 +18,7 @@ defmodule GoalServer.Twitter do
 
   def authorize_url!(callback_url) do
     new()
-    token = ExTwitter.request_token()
+    token = ExTwitter.request_token(callback_url)
     {:ok, authenticate_url} = ExTwitter.authenticate_url(token.oauth_token)
     authenticate_url
   end

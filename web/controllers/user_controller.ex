@@ -2,6 +2,7 @@ defmodule GoalServer.UserController do
   use GoalServer.Web, :controller
 
   alias GoalServer.User
+  alias GoalServer.Authentication
 
   plug :scrub_params, "user" when action in [:create, :update]
 
@@ -17,10 +18,24 @@ defmodule GoalServer.UserController do
 
   def create(conn, %{"user" => user_params}) do
     changeset = User.changeset(%User{}, user_params)
+    ret = if changeset.valid? do
+      Repo.transaction(fn ->
+        user = Repo.insert!(changeset)
+        auth = get_session(conn, :tmp_user).auth
+          |> Map.put(:user_id, user.id)
+        Authentication.upsert_changeset(%Authentication{}, auth)
+        |> Repo.insert!
+        user
+      end)
+    else
+      {:error, changeset}
+    end
 
-    case Repo.insert(changeset) do
-      {:ok, _user} ->
+    case ret do
+      {:ok, user} ->
         conn
+        |> delete_session(:tmp_user)
+        |> put_session(:current_user, user)
         |> put_flash(:info, "User created successfully.")
         |> redirect(to: user_path(conn, :index))
       {:error, changeset} ->

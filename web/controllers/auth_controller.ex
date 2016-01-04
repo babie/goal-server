@@ -14,7 +14,7 @@ defmodule GoalServer.AuthController do
 
     conn
     |> put_session(:tmp_user, user)
-    |> redirect to: user_path(conn, :new)
+    |> redirect(to: user_path(conn, :new))
   end
 
   defp authorize_url!("twitter", callback_url), do: Twitter.authorize_url!(callback_url)

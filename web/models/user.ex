@@ -3,6 +3,7 @@ defmodule GoalServer.User do
 
   schema "users" do
     field :nick, :string
+    has_many :authentications, GoalServer.Authentication
 
     timestamps
   end
