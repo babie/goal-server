@@ -5,8 +5,7 @@ defmodule GoalServer.AuthController do
   alias GoalServer.Github
 
   def index(conn, %{"provider" => provider}) do
-    callback_url = auth_url(conn, :callback, "twitter")
-    redirect conn, external: authorize_url!(provider, callback_url)
+    redirect conn, external: authorize_url!(provider)
   end
 
   def callback(conn, %{"provider" => provider} = params) do
@@ -18,9 +17,9 @@ defmodule GoalServer.AuthController do
     |> redirect(to: user_path(conn, :new))
   end
 
-  defp authorize_url!("twitter", callback_url), do: Twitter.authorize_url!(callback_url)
-  defp authorize_url!("github", callback_url), do: Github.authorize_url!()
-  defp authorize_url!(_, _), do: raise "No matching provider available"
+  defp authorize_url!("twitter"), do: Twitter.authorize_url!()
+  defp authorize_url!("github"), do: Github.authorize_url!()
+  defp authorize_url!(_), do: raise "No matching provider available"
 
   defp get_token!("twitter", params), do: Twitter.get_token!(params)
   defp get_token!("github", params), do: Github.get_token!(params)

@@ -16,9 +16,9 @@ defmodule GoalServer.Twitter do
     ExTwitter.configure(:process, config)
   end
 
-  def authorize_url!(callback_url) do
+  def authorize_url!() do
     new()
-    token = ExTwitter.request_token(callback_url)
+    token = ExTwitter.request_token(System.get_env("TWITTER_CALLBACK_URI"))
     {:ok, authenticate_url} = ExTwitter.authenticate_url(token.oauth_token)
     authenticate_url
   end
@@ -35,7 +35,15 @@ defmodule GoalServer.Twitter do
       access_token_secret: token.oauth_token_secret
     )
     user = ExTwitter.verify_credentials
-    %{nick: user.screen_name, auth: %{uid: user.id_str, provider: "twitter", oauth_token: token.oauth_token, oauth_token_secret: token.oauth_token_secret}}
+    %{
+      nick: user.screen_name,
+      auth: %{
+        uid: user.id_str,
+        provider: "twitter",
+        oauth_token: token.oauth_token,
+        oauth_token_secret: token.oauth_token_secret
+      }
+    }
   end
 
 end
