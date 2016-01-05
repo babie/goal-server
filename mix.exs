@@ -21,7 +21,7 @@ defmodule GoalServer.Mixfile do
   def application do
     [mod: {GoalServer, []},
      applications: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :mariaex]]
+                    :phoenix_ecto, :mariaex, :oauth2]]
   end
 
   # Specifies which paths to compile per environment.
@@ -45,6 +45,7 @@ defmodule GoalServer.Mixfile do
       {:power_assert, "~> 0.0.6", only: :test},
       {:oauth, github: "tim/erlang-oauth"},
       {:extwitter, "~> 0.6"},
+      {:oauth2, "~> 0.5"},
       {:safetybox, "~> 0.1"}
     ]
   end

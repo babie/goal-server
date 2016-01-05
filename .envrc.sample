@@ -1,4 +1,9 @@
 export TWITTER_CONSUMER_KEY=
 export TWITTER_CONSUMER_SECRET=
+
+export GITHUB_CLIENT_ID=
+export GITHUB_CLIENT_SECRET=
+export GITHUB_REDIRECT_URI=http://lvh.me:4000/auth/github/callback
+
 export OAUTH_TOKEN_CRYPT_SECRET=hogehoge
 export OAUTH_TOKEN_CRYPT_SALT=fugafuga
