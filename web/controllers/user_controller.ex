@@ -26,7 +26,6 @@ defmodule GoalServer.UserController do
           |> Map.put(:user_id, user.id)
         Authentication.upsert_changeset(%Authentication{}, auth)
         |> Repo.insert!
-        user
         goal = Goal.changeset(
           %Goal{}, %{
             title: "root",
@@ -37,6 +36,7 @@ defmodule GoalServer.UserController do
           }
         )
         |> Repo.insert!
+        user |> Repo.preload([:root])
       end)
     else
       {:error, changeset}
@@ -48,7 +48,7 @@ defmodule GoalServer.UserController do
         |> delete_session(:tmp_user)
         |> put_session(:current_user, user)
         |> put_flash(:info, "User created successfully.")
-        |> redirect(to: user_path(conn, :index))
+        |> redirect(to: goal_path(conn, :show_html, user.root.id))
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end

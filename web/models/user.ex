@@ -4,7 +4,7 @@ defmodule GoalServer.User do
   schema "users" do
     field :nick, :string
     has_many :authentications, GoalServer.Authentication
-    has_one :root, Goal, foreign_key: :owned_by
+    has_one :root, GoalServer.Goal, foreign_key: :owned_by
 
     timestamps
   end

@@ -24,6 +24,7 @@ defmodule GoalServer.Router do
 
     get "/", PageController, :index
     resources "/users", UserController
+    get "/goals/:id", GoalController, :show_html
   end
 
   scope "/auth", GoalServer do
@@ -34,7 +35,9 @@ defmodule GoalServer.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", GoalServer do
-  #   pipe_through :api
-  # end
+  scope "/api", GoalServer do
+    pipe_through :api
+
+    resources "/goals", GoalController, except: [:new, :edit]
+  end
 end
