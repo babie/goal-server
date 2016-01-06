@@ -3,6 +3,7 @@ defmodule GoalServer.UserController do
 
   alias GoalServer.User
   alias GoalServer.Authentication
+  alias GoalServer.Goal
 
   plug :scrub_params, "user" when action in [:create, :update]
 
@@ -26,6 +27,16 @@ defmodule GoalServer.UserController do
         Authentication.upsert_changeset(%Authentication{}, auth)
         |> Repo.insert!
         user
+        goal = Goal.changeset(
+          %Goal{}, %{
+            title: "root",
+            status: "todo",
+            owned_by: user.id,
+            inserted_by: user.id,
+            updated_by: user.id
+          }
+        )
+        |> Repo.insert!
       end)
     else
       {:error, changeset}

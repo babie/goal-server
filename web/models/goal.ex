@@ -5,15 +5,15 @@ defmodule GoalServer.Goal do
     field :title, :string
     field :body, :string
     field :status, :string
-    belongs_to :parent, GoalServer.Parent
-    belongs_to :inserted_by, GoalServer.InsertedBy
-    belongs_to :updated_by, GoalServer.UpdatedBy
-    belongs_to :owned_by, GoalServer.OwnedBy
+    belongs_to :parent, GoalServer.Goal
+    belongs_to :owner, GoalServer.User, foreign_key: :owned_by
+    belongs_to :creator, GoalServer.User, foreign_key: :inserted_by
+    belongs_to :updater, GoalServer.User, foreign_key: :updated_by
 
     timestamps
   end
 
-  @required_fields ~w(title body status)
+  @required_fields ~w(title status owned_by inserted_by updated_by)
   @optional_fields ~w()
 
   @doc """
