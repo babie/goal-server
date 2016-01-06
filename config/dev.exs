@@ -12,7 +12,7 @@ config :goal_server, GoalServer.Endpoint,
   code_reloader: true,
   cache_static_lookup: false,
   check_origin: false,
-  watchers: [node: ["node_modules/brunch/bin/brunch", "watch", "--stdin"]]
+  watchers: [npm: ["run", "watch"]]
 
 # Watch static and templates for browser reloading.
 config :goal_server, GoalServer.Endpoint,
