@@ -1,30 +1,39 @@
 defmodule GoalServer.AuthController do
   use GoalServer.Web, :controller
+  plug Ueberauth
 
-  alias GoalServer.Twitter
-  alias GoalServer.Github
+  alias GoalServer.Provider
 
-  def index(conn, %{"provider" => provider}) do
-    redirect conn, external: authorize_url!(provider)
-  end
-
-  def callback(conn, %{"provider" => provider} = params) do
-    token = get_token!(provider, params)
-    user = get_user!(provider, token)
-
+  def callback(%{ assigns: %{ ueberauth_failure: _fails } } = conn, _params) do
     conn
-    |> put_session(:tmp_user, user)
-    |> redirect(to: user_path(conn, :new))
+    |> put_flash(:error, "Failed to authenticate.")
+    |> redirect(to: "/")
   end
 
-  defp authorize_url!("twitter"), do: Twitter.authorize_url!()
-  defp authorize_url!("github"), do: Github.authorize_url!()
-  defp authorize_url!(_), do: raise "No matching provider available"
-
-  defp get_token!("twitter", params), do: Twitter.get_token!(params)
-  defp get_token!("github", params), do: Github.get_token!(params)
-  defp get_token!(_,_), do: raise "No matching provider available"
-
-  defp get_user!("twitter", token), do: Twitter.get_user!(token)
-  defp get_user!("github", token), do: Github.get_user!(token)
+  def callback(%{ assigns: %{ ueberauth_auth: auth } } = conn, params) do
+    auth = %{
+      uid: auth.uid,
+      provider: params["provider"],
+      info: %{
+        nick: auth.info.nickname
+      },
+      credentials: %{
+        token: auth.credentials.token,
+        secret: auth.credentials.secret
+      }
+    }
+    IO.inspect auth
+    provider = Repo.get_by(Provider, name: auth.provider, uid: auth.uid)
+    if provider do
+      provider = provider
+      |> Repo.preload([user: [:root]])
+      conn
+      |> redirect(to: goal_path(conn, :show_html, provider.user.root.id))
+    else
+      conn
+      |> put_flash(:info, "Successfully authenticated.")
+      |> put_session(:auth, auth)
+      |> redirect(to: user_path(conn, :new))
+    end
+  end
 end

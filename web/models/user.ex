@@ -3,8 +3,8 @@ defmodule GoalServer.User do
 
   schema "users" do
     field :nick, :string
-    has_many :authentications, GoalServer.Authentication
-    has_one :root, GoalServer.Goal, foreign_key: :owned_by
+    has_many :providers, GoalServer.Provider, on_delete: :delete_all
+    has_one :root, GoalServer.Goal, foreign_key: :owned_by, on_delete: :delete_all
 
     timestamps
   end

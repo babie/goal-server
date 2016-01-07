@@ -5,7 +5,17 @@ defmodule GoalServer.UserControllerTest do
   alias GoalServer.User
   @valid_attrs %{nick: "some content"}
   @invalid_attrs %{}
-  @valid_tmp_user %{nick: "some content", auth: %{oauth_token: "oauth_token", oauth_token_secret: "oauth_token_secret", provider: "twitter", uid: "long_long_some_content"}}
+  @valid_auth %{
+    uid: "111111111111",
+    provider: "twitter",
+    info: %{
+      nick: "test_user"
+    },
+    credentials: %{
+      token: "asdfghjkl",
+      secret: "zxcvbnm"
+    }
+  }
 
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, user_path(conn, :index)
@@ -15,7 +25,7 @@ defmodule GoalServer.UserControllerTest do
   test "renders form for new resources", %{conn: conn} do
     conn = conn
       |> with_session_and_flash
-      |> put_session(:tmp_user, @valid_tmp_user)
+      |> put_session(:auth, @valid_auth)
       |> action(:new, %{})
     #conn = get conn, user_path(conn, :new)
     assert html_response(conn, 200) =~ "New user"
@@ -24,7 +34,7 @@ defmodule GoalServer.UserControllerTest do
   test "creates resource and redirects when data is valid", %{conn: conn} do
     conn = conn
       |> with_session_and_flash
-      |> put_session(:tmp_user, @valid_tmp_user)
+      |> put_session(:auth, @valid_auth)
       |> action(:create, %{"user" => @valid_attrs})
     #conn = post conn, user_path(conn, :create), user: @valid_attrs
     user = Repo.get_by(User, @valid_attrs) |> Repo.preload([:root])
@@ -35,7 +45,7 @@ defmodule GoalServer.UserControllerTest do
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
     conn = conn
       |> with_session_and_flash
-      |> put_session(:tmp_user, @valid_tmp_user)
+      |> put_session(:auth, @valid_auth)
       |> action(:create, %{"user" => @invalid_attrs})
     #conn = post conn, user_path(conn, :create), user: @invalid_attrs
     assert html_response(conn, 200) =~ "New user"

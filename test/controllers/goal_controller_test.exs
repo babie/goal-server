@@ -17,7 +17,7 @@ defmodule GoalServer.GoalControllerTest do
     assert json_response(conn, 200)["data"] == [%{"body" => nil, "id" => goal.id, "inserted_by" => goal.inserted_by, "owned_by" => goal.owned_by, "parent_id" => nil, "status" => "some content", "title" => "some content", "updated_by" => goal.updated_by}]
   end
 
-  test "shows chosen resource", %{conn: conn, user: user, goal: goal} do
+  test "shows chosen resource", %{conn: conn, goal: goal} do
     conn = get conn, goal_path(conn, :show, goal)
     assert json_response(conn, 200)["data"] == %{"id" => goal.id,
       "title" => goal.title,
@@ -50,14 +50,13 @@ defmodule GoalServer.GoalControllerTest do
 
   test "updates and renders chosen resource when data is valid", %{conn: conn, user: user, goal: goal} do
     goal_map = Map.merge(@valid_attrs, %{owned_by: user.id, inserted_by: user.id, updated_by: user.id, body: "hoge"})
-    IO.inspect goal_map
     conn = put conn, goal_path(conn, :update, goal), goal: goal_map
     id = json_response(conn, 200)["data"]["id"]
     assert id
     assert Repo.get_by(Goal, id: id)
   end
 
-  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, user: user, goal: goal} do
+  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, goal: goal} do
     conn = put conn, goal_path(conn, :update, goal), goal: @invalid_attrs
     assert json_response(conn, 422)["errors"] != %{}
   end

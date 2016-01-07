@@ -2,8 +2,6 @@ defmodule GoalServer.UserController do
   use GoalServer.Web, :controller
 
   alias GoalServer.User
-  alias GoalServer.Authentication
-  alias GoalServer.Goal
 
   plug :scrub_params, "user" when action in [:create, :update]
 
@@ -13,7 +11,8 @@ defmodule GoalServer.UserController do
   end
 
   def new(conn, _params) do
-    changeset = User.changeset(%User{}, get_session(conn, :tmp_user))
+    auth = get_session(conn, :auth)
+    changeset = User.changeset(%User{}, %{nick: auth.info.nick})
     render(conn, "new.html", changeset: changeset)
   end
 
@@ -22,20 +21,19 @@ defmodule GoalServer.UserController do
     ret = if changeset.valid? do
       Repo.transaction(fn ->
         user = Repo.insert!(changeset)
-        auth = get_session(conn, :tmp_user).auth
-          |> Map.put(:user_id, user.id)
-        Authentication.upsert_changeset(%Authentication{}, auth)
-        |> Repo.insert!
-        goal = Goal.changeset(
-          %Goal{}, %{
-            title: "root",
-            status: "todo",
-            owned_by: user.id,
-            inserted_by: user.id,
-            updated_by: user.id
+        auth = get_session(conn, :auth)
+        |> Map.put(:user_id, user.id)
+        provider = Ecto.build_assoc(
+          user, :providers, %{
+            uid: auth.uid,
+            name: auth.provider,
+            access_token: auth.credentials.token,
+            access_token_secret: auth.credentials.secret
           }
         )
-        |> Repo.insert!
+        Repo.insert!(provider)
+        goal = Ecto.build_assoc(user, :root, title: "root", status: "todo", inserted_by: user.id, updated_by: user.id)
+        Repo.insert!(goal)
         user |> Repo.preload([:root])
       end)
     else
@@ -45,7 +43,7 @@ defmodule GoalServer.UserController do
     case ret do
       {:ok, user} ->
         conn
-        |> delete_session(:tmp_user)
+        |> delete_session(:auth)
         |> put_session(:current_user, user)
         |> put_flash(:info, "User created successfully.")
         |> redirect(to: goal_path(conn, :show_html, user.root.id))

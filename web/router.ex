@@ -30,7 +30,7 @@ defmodule GoalServer.Router do
   scope "/auth", GoalServer do
     pipe_through :browser
 
-    get "/:provider", AuthController, :index
+    get "/:provider", AuthController, :request
     get "/:provider/callback", AuthController, :callback
   end
 

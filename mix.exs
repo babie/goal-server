@@ -20,8 +20,19 @@ defmodule GoalServer.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {GoalServer, []},
-     applications: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :mariaex, :oauth2]]
+     applications: [
+       :phoenix,
+       :phoenix_html,
+       :cowboy,
+       :logger,
+       :gettext,
+       :phoenix_ecto,
+       :mariaex,
+       :power_assert,
+       :ueberauth_twitter,
+       :ueberauth_github
+     ]
+   ]
   end
 
   # Specifies which paths to compile per environment.
@@ -40,12 +51,14 @@ defmodule GoalServer.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.9"},
       {:cowboy, "~> 1.0"},
+      # Test
       {:mix_test_watch, "~> 0.2", only: :dev},
       {:excoveralls, "~> 0.4", only: :test},
-      {:power_assert, "~> 0.0.6", only: :test},
+      {:power_assert, "~> 0.0.6"},
+      # Twitter/Github Sign-In
       {:oauth, github: "tim/erlang-oauth"},
-      {:extwitter, "~> 0.6"},
-      {:oauth2, "~> 0.5"},
+      {:ueberauth_twitter, "~> 0.2"},
+      {:ueberauth_github, "~> 0.2"},
       {:safetybox, "~> 0.1"}
     ]
   end
