@@ -27,7 +27,8 @@ defmodule GoalServer.UserControllerTest do
       |> put_session(:tmp_user, @valid_tmp_user)
       |> action(:create, %{"user" => @valid_attrs})
     #conn = post conn, user_path(conn, :create), user: @valid_attrs
-    assert redirected_to(conn) == user_path(conn, :index)
+    user = Repo.get_by(User, @valid_attrs) |> Repo.preload([:root])
+    assert redirected_to(conn) == goal_path(conn, :show_html, user.root.id)
     assert Repo.get_by(User, @valid_attrs)
   end
 

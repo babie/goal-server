@@ -5,7 +5,7 @@ defmodule GoalServer.GoalController do
 
   plug :scrub_params, "goal" when action in [:create, :update]
 
-  def index(conn, %{"format" => "json"}) do
+  def index(conn, _params) do
     goals = Repo.all(Goal)
     render(conn, "index.json", goals: goals)
   end
