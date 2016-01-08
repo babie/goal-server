@@ -12,6 +12,7 @@
   </head>
 
   <body>
+    <div id="app">
     <div class="container">
       <header class="header">
         <nav role="navigation">
@@ -29,7 +30,8 @@
         <%= render @view_module, @view_template, assigns %>
       </main>
 
-    </div> <!-- /container -->
+    </div> <!-- .container -->
+    </div> <!-- #app -->
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>

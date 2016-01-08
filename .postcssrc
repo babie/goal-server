@@ -1,0 +1,15 @@
+module.exports = {
+  "parser": "postcss-scss",
+  "use": ["postcss-import", "autoprefixer", "precss"],
+  "local-plugins": true,
+  "postcss-import": {
+    onImport: function(sources) {
+      global.watchCSS(sources);
+    }
+  },
+  "autoprefixer": {
+    "browsers": "> 5%"
+  },
+  "precss": {
+  }
+}

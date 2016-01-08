@@ -60,7 +60,7 @@ class App extends Flux {
 
 const app = new App({
   renderer: el => {
-    ReactDOM.render(el, document.querySelector('.container'));
+    ReactDOM.render(el, document.getElementById('app'));
   },
   initialState: {count: 0},
   middlewares: [
