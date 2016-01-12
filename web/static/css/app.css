@@ -28,15 +28,11 @@ html, body {
   background-color: #333;
 }
 
-// for scroll in column
-html, body, #app, #wrap, main, ul.columns, li.column {
-  height: 100%;
-}
-
 main {
   ul.columns {
     display: flex;
     li.column {
+      height: 100vh;
       overflow: scroll;
       list-style: none;
       ul.rows {
