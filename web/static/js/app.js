@@ -39,7 +39,10 @@ const app = new GoalApp({
   ]
 });
 
-page('/goals/:id', function() {
-  app.update(_initialState => (_initialState));
+page('/goals/:id', function(ctx, next) {
+  const state = {
+    id: parseInt(ctx.params.id),
+  }
+  app.update(initState => (state));
 });
-page();
+page.start();
