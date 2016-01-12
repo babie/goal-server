@@ -4,7 +4,7 @@ import {Component} from 'flumpt';
 class GoalAppComponent extends Component {
   render() {
     return (
-      <div>
+      <div id="wrap">
         <nav id="system-nav">
           <ul>
             <li>
@@ -42,10 +42,16 @@ class GoalAppComponent extends Component {
                   Title 2-3
                 </li>
                 <li className="row">
-                  Title 2-3
+                  Title 2-4
                 </li>
                 <li className="row">
-                  Title 2-3
+                  Title 2-5
+                </li>
+                <li className="row">
+                  Title 2-6
+                </li>
+                <li className="row">
+                  Title 2-7
                 </li>
               </ul>
             </li>
