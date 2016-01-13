@@ -7,8 +7,8 @@
   <div class="col-xs-12">
     <a class="btn btn-primary btn-lg" href="<%= auth_path @conn, :request, "twitter" %>">Sign in with Twitter</a>
     <a class="btn btn-primary btn-lg" href="<%= auth_path @conn, :request, "github" %>">Sign in with Github</a>
-    <%= if @conn.assigns[:current_user] do %>
-      <h2>Welcome, <%= @conn.assigns[:current_user].nick %>.</h2>
+    <%= if @current_user do %>
+      <h2>Welcome, <%= @current_user.nick %>.</h2>
     <% end %>
   </div>
 </div>
