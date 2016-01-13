@@ -59,4 +59,10 @@ defmodule GoalServer.GoalController do
 
     send_resp(conn, :no_content, "")
   end
+
+  def chilcren(conn, %{"id" => id}) do
+    goal = Goal
+    |> Repo.get!(id)
+    
+  end
 end

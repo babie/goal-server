@@ -5,7 +5,10 @@ defmodule GoalServer.Goal do
     field :title, :string
     field :body, :string
     field :status, :string
+    field :position, :integer
     belongs_to :parent, GoalServer.Goal
+    has_many :chidren_goal_trees, GoalServer.GoalTree, foreign_key: :ancestor_id
+    has_many :children, through: [:chidren_goal_trees, :descendant]
     belongs_to :owner, GoalServer.User, foreign_key: :owned_by
     belongs_to :creator, GoalServer.User, foreign_key: :inserted_by
     belongs_to :updater, GoalServer.User, foreign_key: :updated_by

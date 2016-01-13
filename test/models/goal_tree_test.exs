@@ -3,7 +3,7 @@ defmodule GoalServer.GoalTreeTest do
 
   alias GoalServer.GoalTree
 
-  @valid_attrs %{generations: 42, position: 42}
+  @valid_attrs %{ancestor_id: 42, descendant_id: 42, generations: 42}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do

@@ -3,14 +3,13 @@ defmodule GoalServer.GoalTree do
 
   schema "goal_trees" do
     field :generations, :integer
-    field :position, :integer
-    belongs_to :ancestor, GoalServer.Ancestor
-    belongs_to :descendant, GoalServer.Descendant
+    belongs_to :ancestor, GoalServer.Goal
+    belongs_to :descendant, GoalServer.Goal
 
     timestamps
   end
 
-  @required_fields ~w(generations position)
+  @required_fields ~w(ancestor_id descendant_id generations)
   @optional_fields ~w()
 
   @doc """
