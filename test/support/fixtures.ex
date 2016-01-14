@@ -20,32 +20,53 @@ defmodule GoalServer.Fixtures do
       inserted_by: user.id,
       updated_by: user.id
     }
-    |> Repo.preload(:owner)
+
     Repo.insert! %GoalTree{
       ancestor_id: root.id,
       descendant_id: root.id,
       generations: 0
     }
+
     root
+    |> Repo.preload(:goal_tree)
+    |> Repo.preload(:owner)
   end
 
   def fixture(:children, assoc) do
-    root = assoc[:root] || fixture(:root)
-    Enum.reduce([1,2,3], [], fn(i, acc) -> 
+    parent = assoc[:parent] || fixture(:root)
+    Enum.reduce([0, 1, 2], [], fn(i, acc) -> 
+      generations = Enum.filter_map(
+        parent.goal_tree,
+        fn(t) -> t.ancestor_id == t.descendant_id end,
+        &(&1.generations)
+      ) |> List.first
+
       child = Repo.insert! %Goal{
-        title: "child#{i}",
+        title: "child#{generations}-#{i}",
         status: "todo",
-        position: i - 1,
-        parent_id: root.id,
-        owned_by: root.owner.id,
-        inserted_by: root.owner.id,
-        updated_by: root.owner.id
+        position: i,
+        parent_id: parent.id,
+        owned_by: parent.owner.id,
+        inserted_by: parent.owner.id,
+        updated_by: parent.owner.id
       }
+
       Repo.insert! %GoalTree{
-        ancestor_id: root.id,
+        ancestor_id: child.id,
         descendant_id: child.id,
-        generations: 0
+        generations: generations + 1
       }
+
+      Repo.insert! %GoalTree{
+        ancestor_id: parent.id,
+        descendant_id: child.id,
+        generations: generations + 1
+      }
+
+      child = child
+      |> Repo.preload(:goal_tree)
+      |> Repo.preload(:owner)
+
       acc ++ [child]
     end)
   end

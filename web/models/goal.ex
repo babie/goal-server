@@ -6,6 +6,7 @@ defmodule GoalServer.Goal do
     field :body, :string
     field :status, :string
     field :position, :integer
+    has_many :goal_tree, GoalServer.GoalTree, foreign_key: :ancestor_id
     belongs_to :parent, GoalServer.Goal
     belongs_to :owner, GoalServer.User, foreign_key: :owned_by
     belongs_to :creator, GoalServer.User, foreign_key: :inserted_by
@@ -51,6 +52,24 @@ defmodule GoalServer.Goal.Queries do
     from(
       [g, t] in query,
       where: t.descendant_id != ^goal_id
+    )
+  end
+
+  def self_and_ancestor(goal_id) do
+    from(
+      g in Goal,
+      select: g,
+      inner_join: t in GoalTree, on: g.id == t.ancestor_id,
+      where: t.descendant_id == ^goal_id,
+      order_by: [desc: t.generations]
+    )
+  end
+
+  def ancestor(goal_id) do
+    query = self_and_ancestor(goal_id)
+    from(
+      [g, t] in query,
+      where: t.ancestor_id != ^goal_id
     )
   end
 end

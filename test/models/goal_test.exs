@@ -9,8 +9,11 @@ defmodule GoalServer.GoalTest do
   setup do
     user = fixture(:user)
     root = fixture(:root, user: user)
-    children = fixture(:children, root: root)
-    {:ok, user: user, root: root, children: children}
+            |> Repo.preload(:goal_tree)
+            |> Repo.preload(:owner)
+    children = fixture(:children, parent: root)
+    grandchildren = fixture(:children, parent: List.first(children))
+    {:ok, user: user, root: root, children: children, grandchildren: grandchildren}
   end
 
   test "changeset with valid attributes", %{user: user} do
@@ -31,5 +34,12 @@ defmodule GoalServer.GoalTest do
   test "get children", %{root: root, children: children} do
     children_ids = root.id |> Goal.Queries.children |> Repo.all |> Enum.map(&(&1.id))
     assert children_ids == Enum.map(children, &(&1.id))
+  end
+
+  test "get ancestor", %{root: root, children: children, grandchildren: grandchildren} do
+    child = List.first children
+    gchild = List.first grandchildren
+    ancestor_id = gchild.id |> Goal.Queries.ancestor |> Repo.all |> Enum.map(&(&1.id))
+    assert ancestor_id == [child.id]
   end
 end
