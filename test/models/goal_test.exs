@@ -27,20 +27,20 @@ defmodule GoalServer.GoalTest do
   end
 
   test "get children", %{root: root, children: children} do
-    children_ids = root |> Goal.Queries.children |> Repo.all |> Enum.map(&(&1.id))
+    children_ids = root |> Goal.Commands.children |> Enum.map(&(&1.id))
     assert children_ids == Enum.map(children, &(&1.id))
   end
 
   test "get ancestor", %{children: children, grandchildren: grandchildren} do
     child = List.first children
     gchild = List.first grandchildren
-    ancestor_id = gchild |> Goal.Queries.ancestor |> Repo.all |> Enum.map(&(&1.id))
-    assert ancestor_id == [child.id]
+    ancestor = gchild |> Goal.Commands.ancestor
+    assert ancestor.id == child.id
   end
 
   test "get siblings", %{children: children} do
     [c1, c2, c3] = children
-    sibling_ids = c2 |> Goal.Queries.siblings |> Enum.map(&(&1.id))
+    sibling_ids = c2 |> Goal.Commands.siblings |> Enum.map(&(&1.id))
     assert sibling_ids == [c1.id, c3.id]
   end
 end

@@ -31,14 +31,14 @@ defmodule GoalServer.Goal do
 
 end
 
-defmodule GoalServer.Goal.Queries do
+defmodule GoalServer.Goal.Commands do
   alias GoalServer.Repo
   import Ecto.Query, only: [from: 1, from: 2]
   alias Ecto.Adapters.SQL
   alias GoalServer.Goal
   alias GoalServer.GoalTree
 
-  def self_and_children(goal) do
+  def self_and_children_query(goal) do
     from(
     g in Goal,
     select: g,
@@ -48,15 +48,19 @@ defmodule GoalServer.Goal.Queries do
     )
   end
 
-  def children(goal) do
-    query = self_and_children(goal)
+  def children_query(goal) do
+    query = self_and_children_query(goal)
     from(
     [g, t] in query,
     where: t.descendant_id != ^goal.id
     )
   end
 
-  def self_and_ancestor(goal) do
+  def children(goal) do
+    children_query(goal) |> Repo.all
+  end
+
+  def self_and_ancestor_query(goal) do
     from(
     g in Goal,
     select: g,
@@ -66,12 +70,16 @@ defmodule GoalServer.Goal.Queries do
     )
   end
 
-  def ancestor(goal) do
-    query = self_and_ancestor(goal)
+  def ancestor_query(goal) do
+    query = self_and_ancestor_query(goal)
     from(
     [g, t] in query,
     where: t.ancestor_id != ^goal.id
     )
+  end
+
+  def ancestor(goal) do
+    ancestor_query(goal) |> Repo.one
   end
 
   def siblings(goal) do
