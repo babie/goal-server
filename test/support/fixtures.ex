@@ -13,7 +13,7 @@ defmodule GoalServer.Fixtures do
 
   def fixture(:root, assoc) do
     user = assoc[:user] || fixture(:user)
-    Repo.insert! %Goal{
+    root = Repo.insert! %Goal{
       title: "root",
       status: "root",
       owned_by: user.id,
@@ -21,6 +21,12 @@ defmodule GoalServer.Fixtures do
       updated_by: user.id
     }
     |> Repo.preload(:owner)
+    Repo.insert! %GoalTree{
+      ancestor_id: root.id,
+      descendant_id: root.id,
+      generations: 0
+    }
+    root
   end
 
   def fixture(:children, assoc) do

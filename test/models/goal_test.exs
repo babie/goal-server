@@ -24,7 +24,7 @@ defmodule GoalServer.GoalTest do
   end
 
   test "root has children", %{root: root, children: children} do
-    root = root |> Repo.preload(:children)
-    assert root.children == children
+    root_children = root.id |> Goal.Queries.children |> Repo.all
+    assert root_children == children
   end
 end

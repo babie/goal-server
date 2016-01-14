@@ -7,8 +7,6 @@ defmodule GoalServer.Goal do
     field :status, :string
     field :position, :integer
     belongs_to :parent, GoalServer.Goal
-    has_many :chidren_goal_trees, GoalServer.GoalTree, foreign_key: :ancestor_id
-    has_many :children, through: [:chidren_goal_trees, :descendant]
     belongs_to :owner, GoalServer.User, foreign_key: :owned_by
     belongs_to :creator, GoalServer.User, foreign_key: :inserted_by
     belongs_to :updater, GoalServer.User, foreign_key: :updated_by
@@ -28,5 +26,31 @@ defmodule GoalServer.Goal do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
+  end
+
+end
+
+defmodule GoalServer.Goal.Queries do
+  alias GoalServer.Repo
+  import Ecto.Query, only: [from: 1, from: 2]
+  alias GoalServer.Goal
+  alias GoalServer.GoalTree
+
+  def self_and_children(goal_id) do
+    from(
+      g in Goal,
+      select: g,
+      inner_join: t in GoalTree, on: g.id == t.descendant_id,
+      where: t.ancestor_id == ^goal_id,
+      order_by: g.position
+    )
+  end
+
+  def children(goal_id) do
+    query = self_and_children(goal_id)
+    from(
+      [g, t] in query,
+      where: t.descendant_id != ^goal_id
+    )
   end
 end
