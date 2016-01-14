@@ -38,43 +38,43 @@ defmodule GoalServer.Goal.Queries do
   alias GoalServer.Goal
   alias GoalServer.GoalTree
 
-  def self_and_children(goal_id) do
+  def self_and_children(goal) do
     from(
     g in Goal,
     select: g,
     inner_join: t in GoalTree, on: g.id == t.descendant_id,
-    where: t.ancestor_id == ^goal_id,
+    where: t.ancestor_id == ^goal.id,
     order_by: g.position
     )
   end
 
-  def children(goal_id) do
-    query = self_and_children(goal_id)
+  def children(goal) do
+    query = self_and_children(goal)
     from(
     [g, t] in query,
-    where: t.descendant_id != ^goal_id
+    where: t.descendant_id != ^goal.id
     )
   end
 
-  def self_and_ancestor(goal_id) do
+  def self_and_ancestor(goal) do
     from(
     g in Goal,
     select: g,
     inner_join: t in GoalTree, on: g.id == t.ancestor_id,
-    where: t.descendant_id == ^goal_id,
+    where: t.descendant_id == ^goal.id,
     order_by: [desc: t.generations]
     )
   end
 
-  def ancestor(goal_id) do
-    query = self_and_ancestor(goal_id)
+  def ancestor(goal) do
+    query = self_and_ancestor(goal)
     from(
     [g, t] in query,
-    where: t.ancestor_id != ^goal_id
+    where: t.ancestor_id != ^goal.id
     )
   end
 
-  def siblings(goal_id) do
+  def siblings(goal) do
     SQL.query!(
     Repo,
     """
@@ -108,17 +108,21 @@ defmodule GoalServer.Goal.Queries do
       g.position ASC
     ;
     """,
-    [goal_id, goal_id]
+    [goal.id, goal.id]
     ) |> load_into(Goal)
   end
 
   defp load_into(response, model) do
     Enum.map response.rows, fn(row) ->
-      fields = Enum.reduce(Enum.zip(response.columns, row), %{}, fn({key, value}, map) ->
-        Map.put(map, key, value)
-      end)
+      fields = Enum.reduce(
+        Enum.zip(response.columns, row),
+        %{},
+        fn({key, value}, map) -> Map.put(map, key, value) end
+      )
 
-      Ecto.Schema.__load__(model, nil, nil, [], fields, &Repo.__adapter__.load/2)
+      Ecto.Schema.__load__(
+        model, nil, nil, [], fields, &Repo.__adapter__.load/2
+      )
     end
   end
 end
