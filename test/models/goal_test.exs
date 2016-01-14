@@ -1,5 +1,6 @@
 defmodule GoalServer.GoalTest do
   use GoalServer.ModelCase
+  import GoalServer.Fixtures
 
   alias GoalServer.User
   alias GoalServer.Goal
@@ -8,43 +9,10 @@ defmodule GoalServer.GoalTest do
   @valid_attrs %{body: "some content", status: "some content", title: "some content"}
   @invalid_attrs %{}
   setup do
-    user = Repo.insert! User.changeset(%User{}, %{nick: "some content"})
-    root = Repo.insert! Goal.changeset(%Goal{}, %{
-      title: "root",
-      status: "root",
-      owned_by: user.id,
-      inserted_by: user.id,
-      updated_by: user.id
-    })
-    child1 = Repo.insert! Goal.changeset(%Goal{}, %{
-      title: "child1",
-      status: "todo",
-      position: 0,
-      parent_id: root.id,
-      owned_by: user.id,
-      inserted_by: user.id,
-      updated_by: user.id
-    })
-    child1_tree = Repo.insert! GoalTree.changeset(%GoalTree{}, %{
-      ancestor_id: root.id,
-      descendant_id: child1.id,
-      generations: 0
-    })
-    child2 = Repo.insert! Goal.changeset(%Goal{}, %{
-      title: "child2",
-      status: "todo",
-      position: 1,
-      parent_id: root.id,
-      owned_by: user.id,
-      inserted_by: user.id,
-      updated_by: user.id
-    })
-    child2_tree = Repo.insert! GoalTree.changeset(%GoalTree{}, %{
-      ancestor_id: root.id,
-      descendant_id: child2.id,
-      generations: 0
-    })
-    {:ok, user: user, root: root, children: [child1, child2]}
+    user = fixture(:user)
+    root = fixture(:root, user: user)
+    children = fixture(:children, root: root)
+    {:ok, user: user, root: root, children: children}
   end
 
   test "changeset with valid attributes", %{user: user} do
