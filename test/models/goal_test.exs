@@ -2,9 +2,7 @@ defmodule GoalServer.GoalTest do
   use GoalServer.ModelCase
   import GoalServer.Fixtures
 
-  alias GoalServer.User
   alias GoalServer.Goal
-  alias GoalServer.GoalTree
 
   @valid_attrs %{body: "some content", status: "some content", title: "some content"}
   @invalid_attrs %{}
@@ -27,7 +25,6 @@ defmodule GoalServer.GoalTest do
 
   test "root has children", %{root: root, children: children} do
     root = root |> Repo.preload(:children)
-    root_children = Enum.sort(root.children, &(&1.position < &2.position))
     assert root.children == children
   end
 end
