@@ -23,8 +23,13 @@ defmodule GoalServer.GoalTest do
     refute changeset.valid?
   end
 
-  test "root has children", %{root: root, children: children} do
-    root_children = root.id |> Goal.Queries.children |> Repo.all
-    assert root_children == children
+  test "get self_and_children", %{root: root, children: children} do
+    children_ids = root.id |> Goal.Queries.self_and_children |> Repo.all |> Enum.map(&(&1.id))
+    assert children_ids == Enum.map([root|children], &(&1.id))
+  end
+
+  test "get children", %{root: root, children: children} do
+    children_ids = root.id |> Goal.Queries.children |> Repo.all |> Enum.map(&(&1.id))
+    assert children_ids == Enum.map(children, &(&1.id))
   end
 end
