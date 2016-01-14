@@ -34,42 +34,91 @@ end
 defmodule GoalServer.Goal.Queries do
   alias GoalServer.Repo
   import Ecto.Query, only: [from: 1, from: 2]
+  alias Ecto.Adapters.SQL
   alias GoalServer.Goal
   alias GoalServer.GoalTree
 
   def self_and_children(goal_id) do
     from(
-      g in Goal,
-      select: g,
-      inner_join: t in GoalTree, on: g.id == t.descendant_id,
-      where: t.ancestor_id == ^goal_id,
-      order_by: g.position
+    g in Goal,
+    select: g,
+    inner_join: t in GoalTree, on: g.id == t.descendant_id,
+    where: t.ancestor_id == ^goal_id,
+    order_by: g.position
     )
   end
 
   def children(goal_id) do
     query = self_and_children(goal_id)
     from(
-      [g, t] in query,
-      where: t.descendant_id != ^goal_id
+    [g, t] in query,
+    where: t.descendant_id != ^goal_id
     )
   end
 
   def self_and_ancestor(goal_id) do
     from(
-      g in Goal,
-      select: g,
-      inner_join: t in GoalTree, on: g.id == t.ancestor_id,
-      where: t.descendant_id == ^goal_id,
-      order_by: [desc: t.generations]
+    g in Goal,
+    select: g,
+    inner_join: t in GoalTree, on: g.id == t.ancestor_id,
+    where: t.descendant_id == ^goal_id,
+    order_by: [desc: t.generations]
     )
   end
 
   def ancestor(goal_id) do
     query = self_and_ancestor(goal_id)
     from(
-      [g, t] in query,
-      where: t.ancestor_id != ^goal_id
+    [g, t] in query,
+    where: t.ancestor_id != ^goal_id
     )
+  end
+
+  def siblings(goal_id) do
+    SQL.query!(
+    Repo,
+    """
+    SELECT
+      g.*
+    FROM
+      goals AS g
+    WHERE
+      g.id IN (
+        SELECT
+          t1.descendant_id
+        FROM
+          goal_trees AS t1
+        WHERE
+          t1.ancestor_id IN (
+            SELECT
+              t2.ancestor_id
+            FROM
+              goal_trees AS t2
+            WHERE
+              t2.descendant_id = ?
+              AND
+              t2.ancestor_id <> t2.descendant_id
+        )
+        AND
+        t1.ancestor_id <> t1.descendant_id
+      )
+      AND
+      g.id <> ?
+    ORDER BY
+      g.position ASC
+    ;
+    """,
+    [goal_id, goal_id]
+    ) |> load_into(Goal)
+  end
+
+  defp load_into(response, model) do
+    Enum.map response.rows, fn(row) ->
+      fields = Enum.reduce(Enum.zip(response.columns, row), %{}, fn({key, value}, map) ->
+        Map.put(map, key, value)
+      end)
+
+      Ecto.Schema.__load__(model, nil, nil, [], fields, &Repo.__adapter__.load/2)
+    end
   end
 end

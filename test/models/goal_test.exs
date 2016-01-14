@@ -42,4 +42,10 @@ defmodule GoalServer.GoalTest do
     ancestor_id = gchild.id |> Goal.Queries.ancestor |> Repo.all |> Enum.map(&(&1.id))
     assert ancestor_id == [child.id]
   end
+
+  test "get siblings", %{children: children} do
+    [c1, c2, c3] = children
+    sibling_ids = c2.id |> Goal.Queries.siblings |> Enum.map(&(&1.id))
+    assert sibling_ids == [c1.id, c3.id]
+  end
 end
