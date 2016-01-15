@@ -60,7 +60,7 @@ defmodule GoalServer.Goal.Commands do
     children_query(goal) |> Repo.all
   end
 
-  def self_and_ancestor_query(goal) do
+  def self_and_parent_query(goal) do
     from(
       g in Goal,
       select: g,
@@ -70,16 +70,16 @@ defmodule GoalServer.Goal.Commands do
     )
   end
 
-  def ancestor_query(goal) do
-    query = self_and_ancestor_query(goal)
+  def parent_query(goal) do
+    query = self_and_parent_query(goal)
     from(
       [g, t] in query,
       where: t.ancestor_id != ^goal.id
     )
   end
 
-  def ancestor(goal) do
-    ancestor_query(goal) |> Repo.one
+  def parent(goal) do
+    parent_query(goal) |> Repo.one
   end
 
   def siblings(goal) do

@@ -81,7 +81,7 @@ defmodule GoalServer.GoalControllerTest do
   test "shows parent", %{conn: conn, children: children} do
     goal = List.first children
     conn = get conn, goal_path(conn, :parent, goal)
-    parent = goal |> Goal.Commands.ancestor
+    parent = goal |> Goal.Commands.parent
     assert json_response(conn, 200)["data"] == %{
       "id" => parent.id,
       "title" => parent.title,

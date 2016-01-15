@@ -69,7 +69,7 @@ defmodule GoalServer.GoalController do
   
   def parent(conn, %{"id" => id}) do
     goal = Goal |> Repo.get!(id)
-    parent = goal |> Goal.Commands.ancestor
+    parent = goal |> Goal.Commands.parent
     render(conn, "show.json", goal: parent)
   end
 end

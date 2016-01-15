@@ -31,11 +31,11 @@ defmodule GoalServer.GoalTest do
     assert children_ids == Enum.map(children, &(&1.id))
   end
 
-  test "get ancestor", %{children: children, grandchildren: grandchildren} do
+  test "get parent", %{children: children, grandchildren: grandchildren} do
     child = List.first children
     gchild = List.first grandchildren
-    ancestor = gchild |> Goal.Commands.ancestor
-    assert ancestor.id == child.id
+    parent = gchild |> Goal.Commands.parent
+    assert parent.id == child.id
   end
 
   test "get siblings", %{children: children} do
