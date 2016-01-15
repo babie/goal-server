@@ -29,7 +29,7 @@ defmodule GoalServer.Fixtures do
     }
 
     root
-    |> Repo.preload(:goal_tree)
+    |> Repo.preload(:descendant_tree)
     |> Repo.preload(:owner)
   end
 
@@ -37,7 +37,7 @@ defmodule GoalServer.Fixtures do
     parent = assoc[:parent] || fixture(:root)
     Enum.reduce([0, 1, 2], [], fn(i, acc) -> 
       generations = Enum.filter_map(
-        parent.goal_tree,
+        parent.descendant_tree,
         fn(t) -> t.ancestor_id == t.descendant_id end,
         &(&1.generations)
       ) |> List.first
@@ -64,7 +64,7 @@ defmodule GoalServer.Fixtures do
       }
 
       child = child
-      |> Repo.preload(:goal_tree)
+      |> Repo.preload(:descendant_tree)
       |> Repo.preload(:owner)
 
       acc ++ [child]

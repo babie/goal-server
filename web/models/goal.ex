@@ -6,7 +6,7 @@ defmodule GoalServer.Goal do
     field :body, :string
     field :status, :string
     field :position, :integer
-    has_many :goal_tree, GoalServer.GoalTree, foreign_key: :ancestor_id
+    has_many :descendant_tree, GoalServer.GoalTree, foreign_key: :ancestor_id
     belongs_to :owner, GoalServer.User, foreign_key: :owned_by
     belongs_to :creator, GoalServer.User, foreign_key: :inserted_by
     belongs_to :updater, GoalServer.User, foreign_key: :updated_by

@@ -9,7 +9,7 @@ defmodule GoalServer.GoalTest do
   setup do
     user = fixture(:user)
     root = fixture(:root, user: user)
-            |> Repo.preload(:goal_tree)
+            |> Repo.preload(:descendant_tree)
             |> Repo.preload(:owner)
     children = fixture(:children, parent: root)
     grandchildren = fixture(:children, parent: List.first(children))
