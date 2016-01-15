@@ -41,5 +41,6 @@ defmodule GoalServer.Router do
     resources "/goals", GoalController, except: [:new, :edit]
     get "/goals/:id/children", GoalController, :children
     get "/goals/:id/parent", GoalController, :parent
+    get "/goals/:id/siblings", GoalController, :siblings
   end
 end

@@ -69,7 +69,15 @@ defmodule GoalServer.GoalController do
   
   def parent(conn, %{"id" => id}) do
     goal = Goal |> Repo.get!(id)
+    # TODO: user check
     parent = goal |> Goal.Commands.parent
     render(conn, "show.json", goal: parent)
+  end
+
+  def siblings(conn, %{"id" => id}) do
+    goal = Goal |> Repo.get!(id)
+    # TODO: user check
+    siblings = goal |> Goal.Commands.siblings
+    render(conn, "index.json", goals: siblings)
   end
 end

@@ -94,4 +94,12 @@ defmodule GoalServer.GoalControllerTest do
     }
   end
 
+  test "lists all entries on siblings", %{conn: conn, goal: goal, children: children} do
+    [c1, c2, c3] = children
+    conn = get conn, goal_path(conn, :siblings, c2)
+    json_ids = json_response(conn, 200)["data"] |> Enum.map(&(&1["id"]))
+    ids = [c1, c3] |> Enum.map(&(&1.id))
+    assert json_ids == ids
+  end
+
 end
