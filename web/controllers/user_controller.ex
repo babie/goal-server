@@ -2,6 +2,8 @@ defmodule GoalServer.UserController do
   use GoalServer.Web, :controller
 
   alias GoalServer.User
+  alias GoalServer.Goal
+  alias GoalServer.GoalTree
 
   plug :scrub_params, "user" when action in [:create, :update]
 
@@ -32,8 +34,22 @@ defmodule GoalServer.UserController do
           }
         )
         Repo.insert!(provider)
-        goal = Ecto.build_assoc(user, :root, title: "root", status: "todo", inserted_by: user.id, updated_by: user.id)
-        Repo.insert!(goal)
+
+        root = Ecto.build_assoc(
+          user, :root,
+          title: user.nick,
+          status: "todo",
+          position: 0,
+          inserted_by: user.id,
+          updated_by: user.id
+        ) |> Repo.insert!
+
+        Repo.insert! %GoalTree{
+          ancestor_id: root.id,
+          descendant_id: root.id,
+          generations: 0
+        }
+
         user |> Repo.preload([:root])
       end)
     else
