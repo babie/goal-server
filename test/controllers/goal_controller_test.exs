@@ -2,7 +2,6 @@ defmodule GoalServer.GoalControllerTest do
   use GoalServer.ConnCase
   import GoalServer.Fixtures
 
-  alias GoalServer.User
   alias GoalServer.Goal
   @valid_attrs %{body: "some content", inserted_by: 42, owned_by: 42, status: "some content", title: "some content", updated_by: 42}
   @invalid_attrs %{title: "", owned_by: -1}
@@ -94,7 +93,7 @@ defmodule GoalServer.GoalControllerTest do
     }
   end
 
-  test "lists all entries on siblings", %{conn: conn, goal: goal, children: children} do
+  test "lists all entries on siblings", %{conn: conn, children: children} do
     [c1, c2, c3] = children
     conn = get conn, goal_path(conn, :siblings, c2)
     json_ids = json_response(conn, 200)["data"] |> Enum.map(&(&1["id"]))
