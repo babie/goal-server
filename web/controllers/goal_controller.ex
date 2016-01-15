@@ -60,9 +60,11 @@ defmodule GoalServer.GoalController do
     send_resp(conn, :no_content, "")
   end
 
-  def chilcren(conn, %{"id" => id}) do
-    goal = Goal
-    |> Repo.get!(id)
-    
+  def children(conn, %{"id" => id}) do
+    goal = Goal |> Repo.get!(id)
+    #if goal.owned_by != current_user.id do
+    #end
+    children = goal |> Goal.Commands.children
+    render(conn, "index.json", goals: children)
   end
 end

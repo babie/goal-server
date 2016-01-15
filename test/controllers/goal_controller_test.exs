@@ -1,5 +1,6 @@
 defmodule GoalServer.GoalControllerTest do
   use GoalServer.ConnCase
+  import GoalServer.Fixtures
 
   alias GoalServer.User
   alias GoalServer.Goal
@@ -7,14 +8,17 @@ defmodule GoalServer.GoalControllerTest do
   @invalid_attrs %{title: "", owned_by: -1}
 
   setup %{conn: conn} do
-    user = Repo.insert! User.changeset(%User{}, %{nick: "some content"})
-    goal = Repo.insert! Goal.changeset(%Goal{}, Map.merge(@valid_attrs, %{owned_by: user.id, inserted_by: user.id, updated_by: user.id}))
-    {:ok, conn: put_req_header(conn, "accept", "application/json"), user: user, goal: goal}
+    user = fixture(:user)
+    goal = fixture(:root, user: user)
+    children = fixture(:children, parent: goal)
+    {:ok, conn: put_req_header(conn, "accept", "application/json"), user: user, goal: goal, children: children}
   end
 
-  test "lists all entries on index", %{conn: conn, goal: goal} do
+  test "lists all entries on index", %{conn: conn, goal: goal, children: children} do
     conn = get conn, goal_path(conn, :index)
-    assert json_response(conn, 200)["data"] == [%{"body" => nil, "id" => goal.id, "inserted_by" => goal.inserted_by, "owned_by" => goal.owned_by, "status" => "some content", "title" => "some content", "updated_by" => goal.updated_by}]
+    json_ids = json_response(conn, 200)["data"] |> Enum.map(&(&1["id"]))
+    ids = [goal|children] |> Enum.map(&(&1.id))
+    assert json_ids == ids
   end
 
   test "shows chosen resource", %{conn: conn, goal: goal} do
@@ -65,4 +69,12 @@ defmodule GoalServer.GoalControllerTest do
     assert response(conn, 204)
     refute Repo.get(Goal, goal.id)
   end
+
+  test "lists all entries on children", %{conn: conn, goal: goal, children: children} do
+    conn = get conn, goal_path(conn, :children, goal.id)
+    json_ids = json_response(conn, 200)["data"] |> Enum.map(&(&1["id"]))
+    ids = children |> Enum.map(&(&1.id))
+    assert json_ids == ids
+  end
+
 end

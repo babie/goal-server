@@ -40,19 +40,19 @@ defmodule GoalServer.Goal.Commands do
 
   def self_and_children_query(goal) do
     from(
-    g in Goal,
-    select: g,
-    inner_join: t in GoalTree, on: g.id == t.descendant_id,
-    where: t.ancestor_id == ^goal.id,
-    order_by: g.position
+      g in Goal,
+      select: g,
+      inner_join: t in GoalTree, on: g.id == t.descendant_id,
+      where: t.ancestor_id == ^goal.id,
+      order_by: g.position
     )
   end
 
   def children_query(goal) do
     query = self_and_children_query(goal)
     from(
-    [g, t] in query,
-    where: t.descendant_id != ^goal.id
+      [g, t] in query,
+      where: t.descendant_id != ^goal.id
     )
   end
 
@@ -62,19 +62,19 @@ defmodule GoalServer.Goal.Commands do
 
   def self_and_ancestor_query(goal) do
     from(
-    g in Goal,
-    select: g,
-    inner_join: t in GoalTree, on: g.id == t.ancestor_id,
-    where: t.descendant_id == ^goal.id,
-    order_by: [desc: t.generations]
+      g in Goal,
+      select: g,
+      inner_join: t in GoalTree, on: g.id == t.ancestor_id,
+      where: t.descendant_id == ^goal.id,
+      order_by: [desc: t.generations]
     )
   end
 
   def ancestor_query(goal) do
     query = self_and_ancestor_query(goal)
     from(
-    [g, t] in query,
-    where: t.ancestor_id != ^goal.id
+      [g, t] in query,
+      where: t.ancestor_id != ^goal.id
     )
   end
 
@@ -84,39 +84,39 @@ defmodule GoalServer.Goal.Commands do
 
   def siblings(goal) do
     SQL.query!(
-    Repo,
-    """
-    SELECT
-      g.*
-    FROM
-      goals AS g
-    WHERE
-      g.id IN (
-        SELECT
-          t1.descendant_id
-        FROM
-          goal_trees AS t1
-        WHERE
-          t1.ancestor_id IN (
-            SELECT
-              t2.ancestor_id
-            FROM
-              goal_trees AS t2
-            WHERE
-              t2.descendant_id = ?
-              AND
-              t2.ancestor_id <> t2.descendant_id
+      Repo,
+      """
+      SELECT
+        g.*
+      FROM
+        goals AS g
+      WHERE
+        g.id IN (
+          SELECT
+            t1.descendant_id
+          FROM
+            goal_trees AS t1
+          WHERE
+            t1.ancestor_id IN (
+              SELECT
+                t2.ancestor_id
+              FROM
+                goal_trees AS t2
+              WHERE
+                t2.descendant_id = ?
+                AND
+                t2.ancestor_id <> t2.descendant_id
+          )
+          AND
+          t1.ancestor_id <> t1.descendant_id
         )
         AND
-        t1.ancestor_id <> t1.descendant_id
-      )
-      AND
-      g.id <> ?
-    ORDER BY
-      g.position ASC
-    ;
-    """,
-    [goal.id, goal.id]
+        g.id <> ?
+      ORDER BY
+        g.position ASC
+      ;
+      """,
+      [goal.id, goal.id]
     ) |> load_into(Goal)
   end
 
