@@ -42,15 +42,31 @@ defmodule GoalServer.Goal.Commands do
 
   def insert(changeset) do
     if changeset.valid? do
+      # Update position
       Repo.transaction(fn ->
+        parent_id = Map.get(changeset.params, "parent_id")
+        position = Map.get(changeset.params, "position")
+        from(
+          g in Goal,
+          join: t in GoalTree, on: g.id == t.descendant_id,
+          where:
+            t.ancestor_id == ^parent_id and
+            t.descendant_id != ^parent_id and
+            g.position >= ^position,
+          update: [inc: ["position": 1]]
+        ) |> Repo.update_all([])
+
+        # insert goal
         goal = changeset |> Repo.insert!
 
+        # insert self path
         %GoalTree{
           ancestor_id: goal.id,
           descendant_id: goal.id,
           generations: goal.generations
         } |> Repo.insert!
 
+        # insert path as child
         %GoalTree{
           ancestor_id: goal.parent_id,
           descendant_id: goal.id,

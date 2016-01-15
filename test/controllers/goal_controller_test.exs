@@ -49,14 +49,16 @@ defmodule GoalServer.GoalControllerTest do
   end
 
   test "creates and renders resource when data is valid", %{conn: conn, user: user, root: root, children: children} do
-    goal_map = Map.merge(@valid_attrs, %{parent_id: root.id, position: 3, owned_by: user.id, inserted_by: user.id, updated_by: user.id})
+    goal_map = Map.merge(@valid_attrs, %{parent_id: root.id, position: 1, owned_by: user.id, inserted_by: user.id, updated_by: user.id})
     conn = post conn, goal_path(conn, :create), goal: goal_map
+
     id = json_response(conn, 201)["data"]["id"]
     goal = Repo.get(Goal, id) |> Repo.preload([:descendants])
     assert goal
+
     new_children = root |> Goal.Commands.children
     new_children_ids = Enum.map(new_children, &(&1.id))
-    children_ids = Enum.map([goal|children], &(&1.id)) |> Enum.sort
+    children_ids = children |> List.insert_at(1, goal) |> Enum.map(&(&1.id))
     assert new_children_ids == children_ids
   end
 
