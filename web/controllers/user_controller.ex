@@ -2,7 +2,6 @@ defmodule GoalServer.UserController do
   use GoalServer.Web, :controller
 
   alias GoalServer.User
-  alias GoalServer.Goal
   alias GoalServer.GoalTree
 
   plug :scrub_params, "user" when action in [:create, :update]
