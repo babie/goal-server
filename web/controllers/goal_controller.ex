@@ -62,9 +62,14 @@ defmodule GoalServer.GoalController do
 
   def children(conn, %{"id" => id}) do
     goal = Goal |> Repo.get!(id)
-    #if goal.owned_by != current_user.id do
-    #end
+    # TODO: user check
     children = goal |> Goal.Commands.children
     render(conn, "index.json", goals: children)
+  end
+  
+  def parent(conn, %{"id" => id}) do
+    goal = Goal |> Repo.get!(id)
+    parent = goal |> Goal.Commands.ancestor
+    render(conn, "show.json", goal: parent)
   end
 end

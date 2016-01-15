@@ -27,6 +27,7 @@ defmodule GoalServer.GoalControllerTest do
       "title" => goal.title,
       "body" => goal.body,
       "status" => goal.status,
+      "position" => goal.position,
       "owned_by" => goal.owned_by,
       "inserted_by" => goal.inserted_by,
       "updated_by" => goal.updated_by}
@@ -75,6 +76,22 @@ defmodule GoalServer.GoalControllerTest do
     json_ids = json_response(conn, 200)["data"] |> Enum.map(&(&1["id"]))
     ids = children |> Enum.map(&(&1.id))
     assert json_ids == ids
+  end
+
+  test "shows parent", %{conn: conn, children: children} do
+    goal = List.first children
+    conn = get conn, goal_path(conn, :parent, goal)
+    parent = goal |> Goal.Commands.ancestor
+    assert json_response(conn, 200)["data"] == %{
+      "id" => parent.id,
+      "title" => parent.title,
+      "body" => parent.body,
+      "status" => parent.status,
+      "position" => parent.position,
+      "owned_by" => parent.owned_by,
+      "inserted_by" => parent.inserted_by,
+      "updated_by" => parent.updated_by
+    }
   end
 
 end

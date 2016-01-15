@@ -14,6 +14,7 @@ defmodule GoalServer.GoalView do
       title: goal.title,
       body: goal.body,
       status: goal.status,
+      position: goal.position,
       owned_by: goal.owned_by,
       inserted_by: goal.inserted_by,
       updated_by: goal.updated_by}
