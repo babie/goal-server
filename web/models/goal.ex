@@ -6,6 +6,8 @@ defmodule GoalServer.Goal do
     field :body, :string
     field :status, :string
     field :position, :integer
+    field :parent_id, :integer, virtual: true
+    field :generations, :integer, virtual: true
     has_many :descendant_tree, GoalServer.GoalTree, foreign_key: :ancestor_id, on_delete: :delete_all
     has_many :descendants, through: [:descendant_tree, :descendant], on_delete: :delete_all
     belongs_to :owner, GoalServer.User, foreign_key: :owned_by
@@ -15,8 +17,8 @@ defmodule GoalServer.Goal do
     timestamps
   end
 
-  @required_fields ~w(title status owned_by inserted_by updated_by)
-  @optional_fields ~w()
+  @required_fields ~w(title status position generations owned_by inserted_by updated_by)
+  @optional_fields ~w(body parent_id)
 
   @doc """
   Creates a changeset based on the `model` and `params`.
@@ -37,6 +39,30 @@ defmodule GoalServer.Goal.Commands do
   alias Ecto.Adapters.SQL
   alias GoalServer.Goal
   alias GoalServer.GoalTree
+
+  def insert(changeset) do
+    if changeset.valid? do
+      Repo.transaction(fn ->
+        goal = changeset |> Repo.insert!
+
+        %GoalTree{
+          ancestor_id: goal.id,
+          descendant_id: goal.id,
+          generations: goal.generations
+        } |> Repo.insert!
+
+        %GoalTree{
+          ancestor_id: goal.parent_id,
+          descendant_id: goal.id,
+          generations: goal.generations
+        } |> Repo.insert!
+
+        goal
+      end)
+    else
+      {:error, changeset}
+    end
+  end
 
   def self_and_children_query(goal) do
     from(

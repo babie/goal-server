@@ -4,8 +4,16 @@ defmodule GoalServer.GoalTest do
 
   alias GoalServer.Goal
 
-  @valid_attrs %{body: "some content", status: "some content", title: "some content"}
+  @valid_attrs %{
+    title: "some content",
+    body: "some content",
+    status: "some content",
+    position: 0,
+    parent_id: nil,
+    generations: 0,
+  }
   @invalid_attrs %{}
+
   setup do
     user = fixture(:user)
     root = fixture(:root, user: user)

@@ -3,33 +3,43 @@ defmodule GoalServer.GoalControllerTest do
   import GoalServer.Fixtures
 
   alias GoalServer.Goal
-  @valid_attrs %{body: "some content", inserted_by: 42, owned_by: 42, status: "some content", title: "some content", updated_by: 42}
+  @valid_attrs %{
+    title: "some content",
+    body: "some content",
+    status: "todo",
+    position: 0,
+    parent_id: nil,
+    generations: 0,
+    owned_by: 42,
+    inserted_by: 42,
+    updated_by: 42
+  }
   @invalid_attrs %{title: "", owned_by: -1}
 
   setup %{conn: conn} do
     user = fixture(:user)
-    goal = fixture(:root, user: user)
-    children = fixture(:children, parent: goal)
-    {:ok, conn: put_req_header(conn, "accept", "application/json"), user: user, goal: goal, children: children}
+    root = fixture(:root, user: user)
+    children = fixture(:children, parent: root)
+    {:ok, conn: put_req_header(conn, "accept", "application/json"), user: user, root: root, children: children}
   end
 
-  test "lists all entries on index", %{conn: conn, goal: goal, children: children} do
+  test "lists all entries on index", %{conn: conn, root: root, children: children} do
     conn = get conn, goal_path(conn, :index)
     json_ids = json_response(conn, 200)["data"] |> Enum.map(&(&1["id"]))
-    ids = [goal|children] |> Enum.map(&(&1.id))
+    ids = [root|children] |> Enum.map(&(&1.id))
     assert json_ids == ids
   end
 
-  test "shows chosen resource", %{conn: conn, goal: goal} do
-    conn = get conn, goal_path(conn, :show, goal)
-    assert json_response(conn, 200)["data"] == %{"id" => goal.id,
-      "title" => goal.title,
-      "body" => goal.body,
-      "status" => goal.status,
-      "position" => goal.position,
-      "owned_by" => goal.owned_by,
-      "inserted_by" => goal.inserted_by,
-      "updated_by" => goal.updated_by}
+  test "shows chosen resource", %{conn: conn, root: root} do
+    conn = get conn, goal_path(conn, :show, root)
+    assert json_response(conn, 200)["data"] == %{"id" => root.id,
+      "title" => root.title,
+      "body" => root.body,
+      "status" => root.status,
+      "position" => root.position,
+      "owned_by" => root.owned_by,
+      "inserted_by" => root.inserted_by,
+      "updated_by" => root.updated_by}
   end
 
   test "does not show resource and instead throw error when id is nonexistent", %{conn: conn} do
@@ -38,12 +48,16 @@ defmodule GoalServer.GoalControllerTest do
     end
   end
 
-  test "creates and renders resource when data is valid", %{conn: conn, user: user} do
-    goal_map = Map.merge(@valid_attrs, %{owned_by: user.id, inserted_by: user.id, updated_by: user.id})
+  test "creates and renders resource when data is valid", %{conn: conn, user: user, root: root, children: children} do
+    goal_map = Map.merge(@valid_attrs, %{parent_id: root.id, position: 3, owned_by: user.id, inserted_by: user.id, updated_by: user.id})
     conn = post conn, goal_path(conn, :create), goal: goal_map
     id = json_response(conn, 201)["data"]["id"]
-    assert id
-    assert Repo.get_by(Goal, id: id)
+    goal = Repo.get(Goal, id) |> Repo.preload([:descendants])
+    assert goal
+    new_children = root |> Goal.Commands.children
+    new_children_ids = Enum.map(new_children, &(&1.id))
+    children_ids = Enum.map([goal|children], &(&1.id)) |> Enum.sort
+    assert new_children_ids == children_ids
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
@@ -51,27 +65,27 @@ defmodule GoalServer.GoalControllerTest do
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-  test "updates and renders chosen resource when data is valid", %{conn: conn, user: user, goal: goal} do
+  test "updates and renders chosen resource when data is valid", %{conn: conn, user: user, root: root} do
     goal_map = Map.merge(@valid_attrs, %{owned_by: user.id, inserted_by: user.id, updated_by: user.id, body: "hoge"})
-    conn = put conn, goal_path(conn, :update, goal), goal: goal_map
+    conn = put conn, goal_path(conn, :update, root), goal: goal_map
     id = json_response(conn, 200)["data"]["id"]
     assert id
     assert Repo.get_by(Goal, id: id)
   end
 
-  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, goal: goal} do
-    conn = put conn, goal_path(conn, :update, goal), goal: @invalid_attrs
+  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, root: root} do
+    conn = put conn, goal_path(conn, :update, root), goal: @invalid_attrs
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-  test "deletes chosen resource", %{conn: conn, goal: goal} do
-    conn = delete conn, goal_path(conn, :delete, goal)
+  test "deletes chosen resource", %{conn: conn, root: root} do
+    conn = delete conn, goal_path(conn, :delete, root)
     assert response(conn, 204)
-    refute Repo.get(Goal, goal.id)
+    refute Repo.get(Goal, root.id)
   end
 
-  test "lists all entries on children", %{conn: conn, goal: goal, children: children} do
-    conn = get conn, goal_path(conn, :children, goal.id)
+  test "lists all entries on children", %{conn: conn, root: root, children: children} do
+    conn = get conn, goal_path(conn, :children, root.id)
     json_ids = json_response(conn, 200)["data"] |> Enum.map(&(&1["id"]))
     ids = children |> Enum.map(&(&1.id))
     assert json_ids == ids

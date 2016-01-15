@@ -13,7 +13,7 @@ defmodule GoalServer.GoalController do
   def create(conn, %{"goal" => goal_params}) do
     changeset = Goal.changeset(%Goal{}, goal_params)
 
-    case Repo.insert(changeset) do
+    case Goal.Commands.insert(changeset) do
       {:ok, goal} ->
         conn
         |> put_status(:created)
