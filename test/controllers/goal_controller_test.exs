@@ -3,7 +3,7 @@ defmodule GoalServer.GoalControllerTest do
 
   alias GoalServer.User
   alias GoalServer.Goal
-  @valid_attrs %{body: "some content", inserted_by: 42, owned_by: 42, parent_id: 42, status: "some content", title: "some content", updated_by: 42}
+  @valid_attrs %{body: "some content", inserted_by: 42, owned_by: 42, status: "some content", title: "some content", updated_by: 42}
   @invalid_attrs %{title: "", owned_by: -1}
 
   setup %{conn: conn} do
@@ -14,7 +14,7 @@ defmodule GoalServer.GoalControllerTest do
 
   test "lists all entries on index", %{conn: conn, goal: goal} do
     conn = get conn, goal_path(conn, :index)
-    assert json_response(conn, 200)["data"] == [%{"body" => nil, "id" => goal.id, "inserted_by" => goal.inserted_by, "owned_by" => goal.owned_by, "parent_id" => nil, "status" => "some content", "title" => "some content", "updated_by" => goal.updated_by}]
+    assert json_response(conn, 200)["data"] == [%{"body" => nil, "id" => goal.id, "inserted_by" => goal.inserted_by, "owned_by" => goal.owned_by, "status" => "some content", "title" => "some content", "updated_by" => goal.updated_by}]
   end
 
   test "shows chosen resource", %{conn: conn, goal: goal} do
@@ -23,7 +23,6 @@ defmodule GoalServer.GoalControllerTest do
       "title" => goal.title,
       "body" => goal.body,
       "status" => goal.status,
-      "parent_id" => goal.parent_id,
       "owned_by" => goal.owned_by,
       "inserted_by" => goal.inserted_by,
       "updated_by" => goal.updated_by}

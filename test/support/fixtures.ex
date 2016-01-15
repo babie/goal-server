@@ -16,6 +16,7 @@ defmodule GoalServer.Fixtures do
     root = Repo.insert! %Goal{
       title: "root",
       status: "root",
+      position: 0,
       owned_by: user.id,
       inserted_by: user.id,
       updated_by: user.id
@@ -45,7 +46,6 @@ defmodule GoalServer.Fixtures do
         title: "child#{generations}-#{i}",
         status: "todo",
         position: i,
-        parent_id: parent.id,
         owned_by: parent.owner.id,
         inserted_by: parent.owner.id,
         updated_by: parent.owner.id
