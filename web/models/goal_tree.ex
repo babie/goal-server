@@ -44,4 +44,66 @@ defmodule GoalServer.GoalTree do
       [goal.id, goal.parent_id, goal.id, goal.id]
     )
   end
+
+  def update(goal) do
+    # delete old ancestors and there's descendants
+    SQL.query!(
+      Repo,
+      """
+      DELETE FROM
+        goal_trees AS t
+      WHERE
+        t.descendant_id IN (
+          SELECT
+            x.id
+          FROM (
+            SELECT
+              descendant_id AD id
+            FROM
+              goal_trees
+            WHERE
+              ancestor_id = ?
+          ) AS x 
+        )
+        AND
+        t.ancestor_id IN (
+          SELECT
+            y.id
+          FROM
+            goal_trees
+          WHERE
+            descendant_id = ?
+            AND
+            ancestor_id != descendant_id
+          ) AS y
+        )
+      ;
+      """,
+      [goal.id, goal.id]
+    )
+    # insert new ancestors and there's descendants
+    SQL.query!(
+      Repo,
+      """
+      INSERT INTO
+        goal_trees(ancestor_id, descendant_id, generations)
+      (
+        SELECT
+          supertree.ancestor_id,
+          subtree.descendant_id,
+          subtree.generations + 1
+        FROM
+          goal_trees AS supertree
+          CROSS JOIN
+            goal_trees AS subtree
+        WHERE
+          supertree.descendant_id = ?
+          AND
+          subtree.ancestor_id = ?
+      )
+      ;
+      """,
+      [goal.parent_id, goal.id]
+    )
+  end
 end

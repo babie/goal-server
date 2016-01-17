@@ -41,21 +41,25 @@ defmodule GoalServer.Goal.Commands do
   alias GoalServer.GoalTree
   use GoalServer.Model.Util
 
+  def update_positions(parent_id, position) do
+    from(
+      g in Goal,
+      join: t in GoalTree, on: g.id == t.descendant_id,
+      where:
+        t.ancestor_id == ^parent_id and
+        t.generations == 1 and
+        g.position >= ^position,
+      update: [inc: ["position": 1]]
+    ) |> Repo.update_all([])
+  end
+
   def insert(changeset) do
     if changeset.valid? do
       Repo.transaction(fn ->
-        # Update position
+        # Update positions
         parent_id = Map.get(changeset.params, "parent_id")
         position = Map.get(changeset.params, "position")
-        from(
-          g in Goal,
-          join: t in GoalTree, on: g.id == t.descendant_id,
-          where:
-            t.ancestor_id == ^parent_id and
-            t.generations == 1 and
-            g.position >= ^position,
-          update: [inc: ["position": 1]]
-        ) |> Repo.update_all([])
+        update_positions(parent_id, position)
 
         # insert goal
         goal = changeset |> Repo.insert!
@@ -72,6 +76,26 @@ defmodule GoalServer.Goal.Commands do
 
   def update(changeset) do
     if changeset.valid? do
+      Repo.transaction(fn ->
+        # update positions
+        parent_id = Map.get(changeset.params, "parent_id")
+        position = Map.get(changeset.params, "position")
+        if Map.get(changeset.changes, "position") do
+          update_positions(parent_id, position)
+        end
+
+        # update goal
+        goal = changeset |> Repo.update!
+        parent_id = Map.get(changeset.params, "parent_id")
+        goal = %{goal | parent_id: parent_id}
+
+        # move subtree
+        if Map.get(changeset.changes, "parent_id") do
+          GoalTree.update(goal)
+        end
+
+        goal
+      end)
     else
       {:error, changeset}
     end
