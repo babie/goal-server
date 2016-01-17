@@ -39,11 +39,12 @@ defmodule GoalServer.Goal.Commands do
   alias Ecto.Adapters.SQL
   alias GoalServer.Goal
   alias GoalServer.GoalTree
+  use GoalServer.Model.Util
 
   def insert(changeset) do
     if changeset.valid? do
-      # Update position
       Repo.transaction(fn ->
+        # Update position
         parent_id = Map.get(changeset.params, "parent_id")
         position = Map.get(changeset.params, "position")
         from(
@@ -75,6 +76,13 @@ defmodule GoalServer.Goal.Commands do
 
         goal
       end)
+    else
+      {:error, changeset}
+    end
+  end
+
+  def update(changeset) do
+    if changeset.valid? do
     else
       {:error, changeset}
     end
@@ -162,17 +170,4 @@ defmodule GoalServer.Goal.Commands do
     ) |> load_into(Goal)
   end
 
-  defp load_into(response, model) do
-    Enum.map response.rows, fn(row) ->
-      fields = Enum.reduce(
-        Enum.zip(response.columns, row),
-        %{},
-        fn({key, value}, map) -> Map.put(map, key, value) end
-      )
-
-      Ecto.Schema.__load__(
-        model, nil, nil, [], fields, &Repo.__adapter__.load/2
-      )
-    end
-  end
 end
