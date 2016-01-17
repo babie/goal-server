@@ -22,11 +22,7 @@ defmodule GoalServer.Fixtures do
       updated_by: user.id
     }
 
-    Repo.insert! %GoalTree{
-      ancestor_id: root.id,
-      descendant_id: root.id,
-      generations: 0
-    }
+    GoalTree.insert(root)
 
     root
     |> Repo.preload(:descendant_tree)
@@ -50,18 +46,9 @@ defmodule GoalServer.Fixtures do
         inserted_by: parent.owner.id,
         updated_by: parent.owner.id
       }
+      child = %{child | parent_id: parent.id}
 
-      Repo.insert! %GoalTree{
-        ancestor_id: child.id,
-        descendant_id: child.id,
-        generations: generations + 1
-      }
-
-      Repo.insert! %GoalTree{
-        ancestor_id: parent.id,
-        descendant_id: child.id,
-        generations: generations + 1
-      }
+      GoalTree.insert(child)
 
       child = child
       |> Repo.preload(:descendant_tree)

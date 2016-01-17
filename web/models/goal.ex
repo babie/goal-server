@@ -52,27 +52,16 @@ defmodule GoalServer.Goal.Commands do
           join: t in GoalTree, on: g.id == t.descendant_id,
           where:
             t.ancestor_id == ^parent_id and
-            t.descendant_id != ^parent_id and
+            t.generations == 1 and
             g.position >= ^position,
           update: [inc: ["position": 1]]
         ) |> Repo.update_all([])
 
         # insert goal
         goal = changeset |> Repo.insert!
+        goal = %{goal | parent_id: parent_id}
 
-        # insert self path
-        %GoalTree{
-          ancestor_id: goal.id,
-          descendant_id: goal.id,
-          generations: goal.generations
-        } |> Repo.insert!
-
-        # insert path as child
-        %GoalTree{
-          ancestor_id: goal.parent_id,
-          descendant_id: goal.id,
-          generations: goal.generations
-        } |> Repo.insert!
+        GoalTree.insert(goal)
 
         goal
       end)
@@ -88,7 +77,7 @@ defmodule GoalServer.Goal.Commands do
     end
   end
 
-  def self_and_children_query(goal) do
+  def self_and_descendants_query(goal) do
     from(
       g in Goal,
       select: g,
@@ -99,10 +88,10 @@ defmodule GoalServer.Goal.Commands do
   end
 
   def children_query(goal) do
-    query = self_and_children_query(goal)
+    query = self_and_descendants_query(goal)
     from(
       [g, t] in query,
-      where: t.descendant_id != ^goal.id
+      where: t.generations == 1
     )
   end
 
@@ -110,21 +99,22 @@ defmodule GoalServer.Goal.Commands do
     children_query(goal) |> Repo.all
   end
 
-  def self_and_parent_query(goal) do
+  def self_and_ancestors_query(goal) do
     from(
       g in Goal,
       select: g,
       inner_join: t in GoalTree, on: g.id == t.ancestor_id,
       where: t.descendant_id == ^goal.id,
-      order_by: [desc: t.generations]
+      order_by: [asc: t.generations]
     )
   end
 
   def parent_query(goal) do
-    query = self_and_parent_query(goal)
+    query = self_and_ancestors_query(goal)
     from(
       [g, t] in query,
-      where: t.ancestor_id != ^goal.id
+      where: t.ancestor_id != ^goal.id,
+      limit: 1
     )
   end
 
@@ -156,12 +146,14 @@ defmodule GoalServer.Goal.Commands do
                 t2.descendant_id = ?
                 AND
                 t2.ancestor_id <> t2.descendant_id
-          )
-          AND
-          t1.ancestor_id <> t1.descendant_id
+            )
+            AND
+              t1.ancestor_id <> t1.descendant_id
+            AND
+              t1.generations = 1
         )
         AND
-        g.id <> ?
+          g.id <> ?
       ORDER BY
         g.position ASC
       ;

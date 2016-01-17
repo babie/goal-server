@@ -6,8 +6,6 @@ defmodule GoalServer.Repo.Migrations.CreateGoalTree do
       add :ancestor_id, references(:goals, on_delete: :nothing), null: false
       add :descendant_id, references(:goals, on_delete: :nothing), null: false
       add :generations, :integer, null: false
-
-      timestamps
     end
     create index(:goal_trees, [:ancestor_id])
     create index(:goal_trees, [:descendant_id])

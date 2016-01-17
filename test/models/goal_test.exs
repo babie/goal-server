@@ -48,7 +48,8 @@ defmodule GoalServer.GoalTest do
 
   test "get siblings", %{children: children} do
     [c1, c2, c3] = children
-    sibling_ids = c2 |> Goal.Commands.siblings |> Enum.map(&(&1.id))
-    assert sibling_ids == [c1.id, c3.id]
+    new_sibling_ids = c2 |> Goal.Commands.siblings |> Enum.map(&(&1.id))
+    sibling_ids = [c1, c3] |> Enum.map(&(&1.id))
+    assert new_sibling_ids == sibling_ids
   end
 end
