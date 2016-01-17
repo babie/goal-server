@@ -82,6 +82,7 @@ defmodule GoalServer.GoalTree do
       [goal.id, goal.id]
     )
     # insert new ancestors and there's descendants
+    # TODO: generations
     SQL.query!(
       Repo,
       """
@@ -91,11 +92,11 @@ defmodule GoalServer.GoalTree do
         SELECT
           supertree.ancestor_id,
           subtree.descendant_id,
-          subtree.generations + 1
+          subtree.generations
         FROM
           goal_trees AS supertree
           CROSS JOIN
-            goal_trees AS subtree
+          goal_trees AS subtree
         WHERE
           supertree.descendant_id = ?
           AND

@@ -80,13 +80,13 @@ defmodule GoalServer.Goal.Commands do
         # update positions
         parent_id = Map.get(changeset.params, "parent_id")
         position = Map.get(changeset.params, "position")
-        if Map.get(changeset.changes, "position") do
+        if Map.get(changeset.changes, "parent_id") ||
+           Map.get(changeset.changes, "position") do
           update_positions(parent_id, position)
         end
 
         # update goal
         goal = changeset |> Repo.update!
-        parent_id = Map.get(changeset.params, "parent_id")
         goal = %{goal | parent_id: parent_id}
 
         # move subtree
@@ -168,10 +168,14 @@ defmodule GoalServer.Goal.Commands do
                 goal_trees AS t2
               WHERE
                 t2.descendant_id = ?
+                AND
+                t2.generations = 1
             )
-            AND t1.generations = 1
+            AND
+            t1.generations = 1
         )
-        AND g.id <> ?
+        AND
+        g.id <> ?
       ORDER BY
         g.position ASC
       ;

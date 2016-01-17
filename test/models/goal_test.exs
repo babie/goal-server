@@ -19,9 +19,11 @@ defmodule GoalServer.GoalTest do
     root = fixture(:root, user: user)
             |> Repo.preload(:descendant_tree)
             |> Repo.preload(:owner)
-    children = fixture(:children, parent: root)
-    grandchildren = fixture(:children, parent: List.first(children))
-    {:ok, user: user, root: root, children: children, grandchildren: grandchildren}
+    [c1, c2, c3] = children = fixture(:children, parent: root)
+    gcs1 = fixture(:children, parent: c1)
+    gcs2 = fixture(:children, parent: c2)
+    gcs3 = fixture(:children, parent: c3)
+    {:ok, user: user, root: root, children: children, gcs1: gcs1, gcs2: gcs2, gcs3: gcs3}
   end
 
   test "changeset with valid attributes", %{user: user} do
@@ -39,11 +41,11 @@ defmodule GoalServer.GoalTest do
     assert children_ids == Enum.map(children, &(&1.id))
   end
 
-  test "get parent", %{children: children, grandchildren: grandchildren} do
-    child = List.first children
-    gchild = List.first grandchildren
-    parent = gchild |> Goal.Commands.parent
-    assert parent.id == child.id
+  test "get parent", %{children: children, gcs2: gcs2} do
+    [_c1, c2, _c3] = children
+    [_gc1, gc2, _gc3] = gcs2
+    parent = gc2 |> Goal.Commands.parent
+    assert parent.id == c2.id
   end
 
   test "get siblings", %{children: children} do
