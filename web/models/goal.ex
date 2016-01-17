@@ -144,16 +144,10 @@ defmodule GoalServer.Goal.Commands do
                 goal_trees AS t2
               WHERE
                 t2.descendant_id = ?
-                AND
-                t2.ancestor_id <> t2.descendant_id
             )
-            AND
-              t1.ancestor_id <> t1.descendant_id
-            AND
-              t1.generations = 1
+            AND t1.generations = 1
         )
-        AND
-          g.id <> ?
+        AND g.id <> ?
       ORDER BY
         g.position ASC
       ;
