@@ -36,24 +36,75 @@ defmodule GoalServer.Goal.Commands do
   alias GoalServer.Repo
   alias GoalServer.Goal
 
-  def update_positions(parent_id, position) do
-    from(
-      g in Goal,
-      where:
-        g.parent_id == ^parent_id and
-        g.position >= ^position,
-      update: [inc: [position: 1]]
-    ) |> Repo.update_all([])
+  def update_positions(changeset) do
+    parent_id_changed = Map.has_key?(changeset.changes, :parent_id)
+    old_parent_id = changeset.model.parent_id
+    old_position = changeset.model.position
+    new_parent_id = Map.get(changeset.changes, :parent_id) || Map.get(changeset.params, "parent_id")
+    new_position = Map.get(changeset.changes, :position) || Map.get(changeset.params, "position")
+
+
+    if old_parent_id && old_position do # not create
+      if parent_id_changed do # move tree
+        from(
+          g in Goal,
+          where:
+            g.parent_id == ^new_parent_id and
+            g.position >= ^new_position,
+          update: [inc: [position: 1]]
+        ) |> Repo.update_all([])
+        from(
+          g in Goal,
+          where:
+            g.parent_id == ^old_parent_id and
+            g.position > ^old_position,
+          update: [inc: [position: -1]]
+        ) |> Repo.update_all([])
+      else # move on children
+        cond do
+          # down
+          old_position < new_position ->
+            from(
+              g in Goal,
+              where:
+                g.parent_id == ^old_parent_id and
+                g.position > ^old_position and
+                g.position < ^new_position,
+              update: [inc: [position: -1]]
+            ) |> Repo.update_all([])
+            changes = Map.merge(changeset.changes, %{position: new_position - 1})
+            changeset = Map.put(changeset, :changes, changes)
+
+          # up
+          old_position > new_position ->
+            from(
+              g in Goal,
+              where:
+                g.parent_id == ^old_parent_id and
+                g.position < ^old_position and
+                g.position >= ^new_position,
+              update: [inc: [position: 1]]
+            ) |> Repo.update_all([])
+        end
+      end
+    else
+      # insert
+      from(
+        g in Goal,
+        where:
+          g.parent_id == ^new_parent_id and
+          g.position >= ^new_position,
+        update: [inc: [position: 1]]
+      ) |> Repo.update_all([])
+    end
+
+    changeset
   end
 
   def insert(changeset) do
     if changeset.valid? do
       Repo.transaction(fn ->
-        parent_id = Map.get(changeset.params, "parent_id")
-        position = Map.get(changeset.params, "position")
-        if parent_id do
-          update_positions(parent_id, position)
-        end
+        changeset = update_positions(changeset)
 
         goal = changeset |> Repo.insert!
 
@@ -67,11 +118,7 @@ defmodule GoalServer.Goal.Commands do
   def update(changeset) do
     if changeset.valid? do
       Repo.transaction(fn ->
-        parent_id = Map.get(changeset.params, "parent_id") || Map.get(changeset.model, :parent_id)
-        position = Map.get(changeset.params, "position") || Map.get(changeset.model, :position)
-        if parent_id do
-          update_positions(parent_id, position)
-        end
+        changeset = update_positions(changeset)
 
         goal = changeset |> Repo.update!
 

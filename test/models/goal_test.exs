@@ -67,12 +67,30 @@ defmodule GoalServer.GoalTest do
     assert new_children_ids == children_ids
   end
 
-  test "update with valid attributes", %{root: root, children: [c1, c2, c3]} do
-    changeset = Goal.changeset(c3, %{position: 0})
+  test "move position up", %{root: root, children: [c1, c2, c3]} do
+    changeset = Goal.changeset(c2, %{position: 0})
     {:ok, new} = Goal.Commands.update(changeset)
     root = root |> Repo.preload(:children)
     new_children_ids = root.children |> Enum.sort(&(&1.position < &2.position)) |> Enum.map(&(&1.id))
-    children_ids = [new, c1, c2] |> Enum.map(&(&1.id))
+    children_ids = [new, c1, c3] |> Enum.map(&(&1.id))
+    assert new_children_ids == children_ids
+  end
+
+  test "move position down", %{root: root, children: [c1, c2, c3]} do
+    changeset = Goal.changeset(c2, %{position: 3})
+    {:ok, new} = Goal.Commands.update(changeset)
+    root = root |> Repo.preload(:children)
+    new_children_ids = root.children |> Enum.sort(&(&1.position < &2.position)) |> Enum.map(&(&1.id))
+    children_ids = [c1, c3, new] |> Enum.map(&(&1.id))
+    assert new_children_ids == children_ids
+  end
+
+  test "move subtree", %{root: root, children: [c1, c2, c3], gcs2: [_gcs2_1, gcs2_2, _gcs2_3]} do
+    changeset = Goal.changeset(gcs2_2, %{parent_id: root.id, position: 1})
+    {:ok, new} = Goal.Commands.update(changeset)
+    root = root |> Repo.preload(:children)
+    new_children_ids = root.children |> Enum.sort(&(&1.position < &2.position)) |> Enum.map(&(&1.id))
+    children_ids = [c1, new, c2, c3] |> Enum.map(&(&1.id))
     assert new_children_ids == children_ids
   end
 end
