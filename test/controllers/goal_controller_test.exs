@@ -51,6 +51,8 @@ defmodule GoalServer.GoalControllerTest do
     conn = post conn, goal_path(conn, :create), goal: attrs
 
     id = json_response(conn, 201)["data"]["id"]
+    assert id
+
     goal = Repo.get(Goal, id)
     assert goal
 
@@ -66,11 +68,14 @@ defmodule GoalServer.GoalControllerTest do
   end
 
   test "updates and renders chosen resource when data is valid", %{conn: conn, user: user, root: root} do
-    goal_map = Map.merge(@valid_attrs, %{body: "hoge", owned_by: user.id})
-    conn = put conn, goal_path(conn, :update, root), goal: goal_map
+    attrs = Map.merge(@valid_attrs, %{body: "hoge", owned_by: user.id})
+    conn = put conn, goal_path(conn, :update, root), goal: attrs
+
     id = json_response(conn, 200)["data"]["id"]
     assert id
-    assert Repo.get_by(Goal, id: id)
+
+    goal = Repo.get(Goal, id)
+    assert goal
   end
 
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, root: root} do
