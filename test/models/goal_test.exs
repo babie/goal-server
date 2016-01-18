@@ -35,17 +35,17 @@ defmodule GoalServer.GoalTest do
     refute changeset.valid?
   end
 
-  test "get children", %{root: root, children: children} do
-    new_children_ids = root.children |> Enum.sort(&(&1.position < &2.position)) |> Enum.map(&(&1.id))
-    children_ids = children |> Enum.map(&(&1.id))
-    assert new_children_ids == children_ids
-  end
-
   test "get parent", %{children: children, gcs2: gcs2} do
     [_c1, c2, _c3] = children
     [_gc1, gc2, _gc3] = gcs2
     parent = gc2.parent
     assert parent.id == c2.id
+  end
+
+  test "get children", %{root: root, children: children} do
+    new_children_ids = root.children |> Enum.sort(&(&1.position < &2.position)) |> Enum.map(&(&1.id))
+    children_ids = children |> Enum.map(&(&1.id))
+    assert new_children_ids == children_ids
   end
 
   test "get siblings", %{children: children} do
