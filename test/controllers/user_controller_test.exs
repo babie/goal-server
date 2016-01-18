@@ -37,7 +37,7 @@ defmodule GoalServer.UserControllerTest do
       |> put_session(:auth, @valid_auth)
       |> action(:create, %{"user" => @valid_attrs})
     #conn = post conn, user_path(conn, :create), user: @valid_attrs
-    user = Repo.get_by(User, @valid_attrs) |> Repo.preload([root: [:descendant_tree]])
+    user = Repo.get_by(User, @valid_attrs) |> Repo.preload([:root])
     assert redirected_to(conn) == goal_path(conn, :show_html, user.root.id)
     assert Repo.get_by(User, @valid_attrs)
 
@@ -48,11 +48,6 @@ defmodule GoalServer.UserControllerTest do
     assert root.owned_by == user.id
     assert root.inserted_by == user.id
     assert root.updated_by == user.id
-
-    assert length(root.descendant_tree) == 1
-    descendant_tree = List.first root.descendant_tree
-    assert descendant_tree.ancestor_id == user.root.id
-    assert descendant_tree.descendant_id == user.root.id
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do

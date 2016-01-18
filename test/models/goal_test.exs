@@ -10,20 +10,19 @@ defmodule GoalServer.GoalTest do
     status: "some content",
     position: 0,
     parent_id: nil,
-    generations: 0,
   }
   @invalid_attrs %{}
 
   setup do
     user = fixture(:user)
     root = fixture(:root, user: user)
-            |> Repo.preload(:descendant_tree)
-            |> Repo.preload(:owner)
-    [c1, c2, c3] = children = fixture(:children, parent: root)
+    [c1, c2, c3] = fixture(:children, parent: root)
     gcs1 = fixture(:children, parent: c1)
     gcs2 = fixture(:children, parent: c2)
     gcs3 = fixture(:children, parent: c3)
-    {:ok, user: user, root: root, children: children, gcs1: gcs1, gcs2: gcs2, gcs3: gcs3}
+    [root, c1, c2, c3] = [root, c1, c2, c3] |> Enum.map(&(Repo.preload(&1, [:children, :owner])))
+    
+    {:ok, user: user, root: root, children: [c1, c2, c3], gcs1: gcs1, gcs2: gcs2, gcs3: gcs3}
   end
 
   test "changeset with valid attributes", %{user: user} do
@@ -37,14 +36,15 @@ defmodule GoalServer.GoalTest do
   end
 
   test "get children", %{root: root, children: children} do
-    children_ids = root |> Goal.Commands.children |> Enum.map(&(&1.id))
-    assert children_ids == Enum.map(children, &(&1.id))
+    new_children_ids = root.children |> Enum.sort(&(&1.position < &2.position)) |> Enum.map(&(&1.id))
+    children_ids = children |> Enum.map(&(&1.id))
+    assert new_children_ids == children_ids
   end
 
   test "get parent", %{children: children, gcs2: gcs2} do
     [_c1, c2, _c3] = children
     [_gc1, gc2, _gc3] = gcs2
-    parent = gc2 |> Goal.Commands.parent
+    parent = gc2.parent
     assert parent.id == c2.id
   end
 

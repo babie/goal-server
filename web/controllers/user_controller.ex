@@ -2,7 +2,6 @@ defmodule GoalServer.UserController do
   use GoalServer.Web, :controller
 
   alias GoalServer.User
-  alias GoalServer.GoalTree
 
   plug :scrub_params, "user" when action in [:create, :update]
 
@@ -42,12 +41,6 @@ defmodule GoalServer.UserController do
           inserted_by: user.id,
           updated_by: user.id
         ) |> Repo.insert!
-
-        Repo.insert! %GoalTree{
-          ancestor_id: root.id,
-          descendant_id: root.id,
-          generations: 0
-        }
 
         user |> Repo.preload([:root])
       end)

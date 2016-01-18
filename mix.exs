@@ -28,7 +28,6 @@ defmodule GoalServer.Mixfile do
        :gettext,
        :phoenix_ecto,
        :postgrex,
-       :power_assert,
        :ueberauth_twitter,
        :ueberauth_github
      ]
@@ -54,7 +53,6 @@ defmodule GoalServer.Mixfile do
       # Test
       {:mix_test_watch, "~> 0.2", only: :dev},
       {:excoveralls, "~> 0.4", only: :test},
-      {:power_assert, "~> 0.0.6"},
       # Twitter/Github Sign-In
       {:oauth, github: "tim/erlang-oauth"},
       {:ueberauth_twitter, "~> 0.2"},

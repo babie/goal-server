@@ -9,7 +9,6 @@ defmodule GoalServer.GoalControllerTest do
     status: "todo",
     position: 0,
     parent_id: nil,
-    generations: 0,
     owned_by: 42,
     inserted_by: 42,
     updated_by: 42
@@ -20,6 +19,7 @@ defmodule GoalServer.GoalControllerTest do
     user = fixture(:user)
     root = fixture(:root, user: user)
     children = fixture(:children, parent: root)
+    |> Enum.map(&(Repo.preload(&1, :parent)))
     {:ok, conn: put_req_header(conn, "accept", "application/json"), user: user, root: root, children: children}
   end
 
@@ -53,11 +53,11 @@ defmodule GoalServer.GoalControllerTest do
     conn = post conn, goal_path(conn, :create), goal: goal_map
 
     id = json_response(conn, 201)["data"]["id"]
-    goal = Repo.get(Goal, id) |> Repo.preload([:descendants])
+    goal = Repo.get(Goal, id)
     assert goal
 
-    new_children = root |> Goal.Commands.children
-    new_children_ids = Enum.map(new_children, &(&1.id))
+    root = root |> Repo.preload(:children)
+    new_children_ids = root.children |> Enum.sort(&(&1.position < &2.position)) |> Enum.map(&(&1.id))
     children_ids = children |> List.insert_at(1, goal) |> Enum.map(&(&1.id))
     assert new_children_ids == children_ids
   end
@@ -96,7 +96,7 @@ defmodule GoalServer.GoalControllerTest do
   test "shows parent", %{conn: conn, children: children} do
     goal = List.first children
     conn = get conn, goal_path(conn, :parent, goal)
-    parent = goal |> Goal.Commands.parent
+    parent = goal.parent
     assert json_response(conn, 200)["data"] == %{
       "id" => parent.id,
       "title" => parent.title,

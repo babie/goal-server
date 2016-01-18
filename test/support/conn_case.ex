@@ -13,7 +13,7 @@ defmodule GoalServer.ConnCase do
   of the test unless the test case is marked as async.
   """
 
-  use PowerAssert.CaseTemplate
+  use ExUnit.CaseTemplate
 
   using do
     quote do

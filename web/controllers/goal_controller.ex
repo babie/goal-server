@@ -61,16 +61,16 @@ defmodule GoalServer.GoalController do
   end
 
   def children(conn, %{"id" => id}) do
-    goal = Goal |> Repo.get!(id)
+    goal = Goal |> Repo.get!(id) |> Repo.preload(:children)
     # TODO: user check
-    children = goal |> Goal.Commands.children
+    children = goal.children |> Enum.sort(&(&1.position < &2.position))
     render(conn, "index.json", goals: children)
   end
   
   def parent(conn, %{"id" => id}) do
-    goal = Goal |> Repo.get!(id)
+    goal = Goal |> Repo.get!(id) |> Repo.preload(:parent) 
     # TODO: user check
-    parent = goal |> Goal.Commands.parent
+    parent = goal.parent
     render(conn, "show.json", goal: parent)
   end
 
