@@ -38,6 +38,7 @@ defmodule GoalServer.GoalTest do
   test "get parent", %{children: children, gcs2: gcs2} do
     [_c1, c2, _c3] = children
     [_gc1, gc2, _gc3] = gcs2
+    gc2 = gc2 |> Repo.preload(:parent)
     parent = gc2.parent
     assert parent.id == c2.id
   end

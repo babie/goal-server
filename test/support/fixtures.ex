@@ -17,11 +17,12 @@ defmodule GoalServer.Fixtures do
       status: "root",
       position: 0,
       owned_by: user.id,
-    } |> Repo.preload(:owner)
+    }
   end
 
   def fixture(:children, assoc) do
-    parent = assoc[:parent] || fixture(:root)
+    parent = (assoc[:parent] || fixture(:root))
+    |> Repo.preload(:owner)
     Enum.reduce([0, 1, 2], [], fn(i, acc) -> 
 
       child = Repo.insert! %Goal{
@@ -30,7 +31,7 @@ defmodule GoalServer.Fixtures do
         parent_id: parent.id,
         position: i,
         owned_by: parent.owner.id,
-      } |> Repo.preload([:parent, :owner])
+      }
 
       acc ++ [child]
     end)
