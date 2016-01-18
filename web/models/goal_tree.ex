@@ -55,10 +55,10 @@ defmodule GoalServer.GoalTree do
       WHERE
         t.descendant_id IN (
           SELECT
-            x.id
+            x.d_id
           FROM (
             SELECT
-              descendant_id AD id
+              descendant_id AS d_id
             FROM
               goal_trees
             WHERE
@@ -68,13 +68,16 @@ defmodule GoalServer.GoalTree do
         AND
         t.ancestor_id IN (
           SELECT
-            y.id
-          FROM
-            goal_trees
-          WHERE
-            descendant_id = ?
-            AND
-            ancestor_id != descendant_id
+            y.a_id
+          FROM (
+            SELECT
+              ancestor_id AS a_id
+            FROM
+              goal_trees
+            WHERE
+              descendant_id = ?
+              AND
+              ancestor_id <> descendant_id
           ) AS y
         )
       ;
