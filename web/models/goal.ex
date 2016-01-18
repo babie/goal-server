@@ -64,6 +64,24 @@ defmodule GoalServer.Goal.Commands do
     end
   end
 
+  def update(changeset) do
+    if changeset.valid? do
+      Repo.transaction(fn ->
+        parent_id = Map.get(changeset.params, "parent_id") || Map.get(changeset.model, :parent_id)
+        position = Map.get(changeset.params, "position") || Map.get(changeset.model, :position)
+        if parent_id do
+          update_positions(parent_id, position)
+        end
+
+        goal = changeset |> Repo.update!
+
+        goal
+      end)
+    else
+      {:error, changeset}
+    end
+  end
+
   def siblings(goal) do
     from(
       g in Goal,

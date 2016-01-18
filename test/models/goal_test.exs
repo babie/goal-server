@@ -66,4 +66,13 @@ defmodule GoalServer.GoalTest do
     children_ids = [c1, new, c2, c3] |> Enum.map(&(&1.id))
     assert new_children_ids == children_ids
   end
+
+  test "update with valid attributes", %{root: root, children: [c1, c2, c3]} do
+    changeset = Goal.changeset(c3, %{position: 0})
+    {:ok, new} = Goal.Commands.update(changeset)
+    root = root |> Repo.preload(:children)
+    new_children_ids = root.children |> Enum.sort(&(&1.position < &2.position)) |> Enum.map(&(&1.id))
+    children_ids = [new, c1, c2] |> Enum.map(&(&1.id))
+    assert new_children_ids == children_ids
+  end
 end
