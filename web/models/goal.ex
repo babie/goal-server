@@ -5,17 +5,15 @@ defmodule GoalServer.Goal do
     field :title, :string
     field :body, :string
     field :status, :string
-    field :position, :integer
-    has_many :children, __MODULE__, foreign_key: :parent_id, on_delete: :delete_all
     belongs_to :parent, __MODULE__
+    field :position, :integer
     belongs_to :owner, GoalServer.User, foreign_key: :owned_by
-    belongs_to :creator, GoalServer.User, foreign_key: :inserted_by
-    belongs_to :updater, GoalServer.User, foreign_key: :updated_by
+    has_many :children, __MODULE__, foreign_key: :parent_id, on_delete: :delete_all
 
     timestamps
   end
 
-  @required_fields ~w(title status position owned_by inserted_by updated_by)
+  @required_fields ~w(title status position owned_by)
   @optional_fields ~w(body parent_id)
 
   @doc """

@@ -38,8 +38,6 @@ defmodule GoalServer.UserController do
           title: user.nick,
           status: "todo",
           position: 0,
-          inserted_by: user.id,
-          updated_by: user.id
         ) |> Repo.insert!
 
         user |> Repo.preload([:root])

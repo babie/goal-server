@@ -10,13 +10,14 @@ defmodule GoalServer.GoalView do
   end
 
   def render("goal.json", %{goal: goal}) do
-    %{id: goal.id,
+    %{
+      id: goal.id,
       title: goal.title,
       body: goal.body,
       status: goal.status,
+      parent_id: goal.parent_id,
       position: goal.position,
       owned_by: goal.owned_by,
-      inserted_by: goal.inserted_by,
-      updated_by: goal.updated_by}
+    }
   end
 end

@@ -10,8 +10,6 @@ defmodule GoalServer.GoalControllerTest do
     position: 0,
     parent_id: nil,
     owned_by: 42,
-    inserted_by: 42,
-    updated_by: 42
   }
   @invalid_attrs %{title: "", owned_by: -1}
 
@@ -36,10 +34,10 @@ defmodule GoalServer.GoalControllerTest do
       "title" => root.title,
       "body" => root.body,
       "status" => root.status,
+      "parent_id" => root.parent_id,
       "position" => root.position,
       "owned_by" => root.owned_by,
-      "inserted_by" => root.inserted_by,
-      "updated_by" => root.updated_by}
+    }
   end
 
   test "does not show resource and instead throw error when id is nonexistent", %{conn: conn} do
@@ -49,7 +47,7 @@ defmodule GoalServer.GoalControllerTest do
   end
 
   test "creates and renders resource when data is valid", %{conn: conn, user: user, root: root, children: children} do
-    goal_map = Map.merge(@valid_attrs, %{parent_id: root.id, position: 1, owned_by: user.id, inserted_by: user.id, updated_by: user.id})
+    goal_map = Map.merge(@valid_attrs, %{parent_id: root.id, position: 1, owned_by: user.id})
     conn = post conn, goal_path(conn, :create), goal: goal_map
 
     id = json_response(conn, 201)["data"]["id"]
@@ -68,7 +66,7 @@ defmodule GoalServer.GoalControllerTest do
   end
 
   test "updates and renders chosen resource when data is valid", %{conn: conn, user: user, root: root} do
-    goal_map = Map.merge(@valid_attrs, %{owned_by: user.id, inserted_by: user.id, updated_by: user.id, body: "hoge"})
+    goal_map = Map.merge(@valid_attrs, %{body: "hoge", owned_by: user.id})
     conn = put conn, goal_path(conn, :update, root), goal: goal_map
     id = json_response(conn, 200)["data"]["id"]
     assert id
@@ -102,10 +100,9 @@ defmodule GoalServer.GoalControllerTest do
       "title" => parent.title,
       "body" => parent.body,
       "status" => parent.status,
+      "parent_id" => parent.parent_id,
       "position" => parent.position,
       "owned_by" => parent.owned_by,
-      "inserted_by" => parent.inserted_by,
-      "updated_by" => parent.updated_by
     }
   end
 

@@ -9,14 +9,10 @@ defmodule GoalServer.Repo.Migrations.CreateGoal do
       add :parent_id, references(:goals, on_delete: :nothing)
       add :position, :integer
       add :owned_by, references(:users, on_delete: :nothing)
-      add :inserted_by, references(:users, on_delete: :nothing)
-      add :updated_by, references(:users, on_delete: :nothing)
 
       timestamps
     end
     create index(:goals, [:parent_id])
-    create index(:goals, [:inserted_by])
-    create index(:goals, [:updated_by])
     create index(:goals, [:owned_by])
 
   end

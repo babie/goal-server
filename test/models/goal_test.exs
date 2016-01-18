@@ -26,7 +26,7 @@ defmodule GoalServer.GoalTest do
   end
 
   test "changeset with valid attributes", %{user: user} do
-    changeset = Goal.changeset(%Goal{}, Map.merge(@valid_attrs, %{owned_by: user.id, inserted_by: user.id, updated_by: user.id}))
+    changeset = Goal.changeset(%Goal{}, Map.merge(@valid_attrs, %{owned_by: user.id}))
     assert changeset.valid?
   end
 

@@ -17,8 +17,6 @@ defmodule GoalServer.Fixtures do
       status: "root",
       position: 0,
       owned_by: user.id,
-      inserted_by: user.id,
-      updated_by: user.id
     } |> Repo.preload(:owner)
   end
 
@@ -32,8 +30,6 @@ defmodule GoalServer.Fixtures do
         parent_id: parent.id,
         position: i,
         owned_by: parent.owner.id,
-        inserted_by: parent.owner.id,
-        updated_by: parent.owner.id
       } |> Repo.preload([:parent, :owner])
 
       acc ++ [child]

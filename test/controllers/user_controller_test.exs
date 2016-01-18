@@ -46,8 +46,6 @@ defmodule GoalServer.UserControllerTest do
     assert root.status == "todo"
     assert root.position == 0
     assert root.owned_by == user.id
-    assert root.inserted_by == user.id
-    assert root.updated_by == user.id
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
