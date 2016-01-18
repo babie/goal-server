@@ -12,7 +12,7 @@ defmodule GoalServer.Fixtures do
 
   def fixture(:root, assoc) do
     user = assoc[:user] || fixture(:user)
-    root = Repo.insert! %Goal{
+    Repo.insert! %Goal{
       title: "root",
       status: "root",
       position: 0,

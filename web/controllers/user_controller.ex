@@ -33,7 +33,7 @@ defmodule GoalServer.UserController do
         )
         Repo.insert!(provider)
 
-        root = Ecto.build_assoc(
+        Ecto.build_assoc(
           user, :root,
           title: user.nick,
           status: "todo",
