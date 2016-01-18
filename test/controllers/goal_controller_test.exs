@@ -47,8 +47,8 @@ defmodule GoalServer.GoalControllerTest do
   end
 
   test "creates and renders resource when data is valid", %{conn: conn, user: user, root: root, children: children} do
-    goal_map = Map.merge(@valid_attrs, %{parent_id: root.id, position: 1, owned_by: user.id})
-    conn = post conn, goal_path(conn, :create), goal: goal_map
+    attrs = Map.merge(@valid_attrs, %{parent_id: root.id, position: 1, owned_by: user.id})
+    conn = post conn, goal_path(conn, :create), goal: attrs
 
     id = json_response(conn, 201)["data"]["id"]
     goal = Repo.get(Goal, id)
@@ -84,16 +84,18 @@ defmodule GoalServer.GoalControllerTest do
     refute Repo.get(Goal, root.id)
   end
 
-  test "lists all entries on children", %{conn: conn, root: root, children: children} do
+  test "get children", %{conn: conn, root: root, children: children} do
     conn = get conn, goal_path(conn, :children, root.id)
-    json_ids = json_response(conn, 200)["data"] |> Enum.map(&(&1["id"]))
+
     ids = children |> Enum.map(&(&1.id))
+    json_ids = json_response(conn, 200)["data"] |> Enum.map(&(&1["id"]))
     assert json_ids == ids
   end
 
-  test "shows parent", %{conn: conn, children: children} do
+  test "get parent", %{conn: conn, children: children} do
     goal = List.first children
     conn = get conn, goal_path(conn, :parent, goal)
+
     parent = goal.parent
     assert json_response(conn, 200)["data"] == %{
       "id" => parent.id,
@@ -106,11 +108,12 @@ defmodule GoalServer.GoalControllerTest do
     }
   end
 
-  test "lists all entries on siblings", %{conn: conn, children: children} do
+  test "get siblings", %{conn: conn, children: children} do
     [c1, c2, c3] = children
     conn = get conn, goal_path(conn, :siblings, c2)
-    json_ids = json_response(conn, 200)["data"] |> Enum.map(&(&1["id"]))
+
     ids = [c1, c3] |> Enum.map(&(&1.id))
+    json_ids = json_response(conn, 200)["data"] |> Enum.map(&(&1["id"]))
     assert json_ids == ids
   end
 
