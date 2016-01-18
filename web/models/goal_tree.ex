@@ -25,24 +25,28 @@ defmodule GoalServer.GoalTree do
   end
 
   def insert(goal) do
-    SQL.query!(
-      Repo,
-      """
-      INSERT INTO
-        goal_trees(ancestor_id, descendant_id, generations)
-          SELECT
-            t.ancestor_id, ?, t.generations + 1
-          FROM
-            goal_trees AS t
-          WHERE
-            t.descendant_id = ?
-        UNION ALL
-          SELECT
-            ?, ?, 0
-      ;
-      """,
-      [goal.id, goal.parent_id, goal.id, goal.id]
-    )
+    if goal.parent_id do
+      SQL.query!(
+        Repo,
+        """
+        INSERT INTO
+          goal_trees(ancestor_id, descendant_id, generations)
+            SELECT
+              t.ancestor_id, $1::integer, t.generations + 1
+            FROM
+              goal_trees AS t
+            WHERE
+              t.descendant_id = $2::integer
+          UNION ALL
+            SELECT
+              $3::integer, $4::integer, 0
+        ;
+        """,
+        [goal.id, goal.parent_id, goal.id, goal.id]
+      )
+    else
+      %__MODULE__{ancestor_id: goal.id, descendant_id: goal.id, generations: 0} |> Repo.insert!
+    end
   end
 
   def update(goal) do

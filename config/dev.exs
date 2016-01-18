@@ -35,9 +35,9 @@ config :phoenix, :stacktrace_depth, 20
 
 # Configure your database
 config :goal_server, GoalServer.Repo,
-  adapter: Ecto.Adapters.MySQL,
-  username: "root",
-  password: "",
+  adapter: Ecto.Adapters.Postgres,
+  username: "postgres",
+  password: "postgres",
   database: "goal_server_dev",
   hostname: "localhost",
   pool_size: 10

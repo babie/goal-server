@@ -27,7 +27,7 @@ defmodule GoalServer.Mixfile do
        :logger,
        :gettext,
        :phoenix_ecto,
-       :mariaex,
+       :postgrex,
        :power_assert,
        :ueberauth_twitter,
        :ueberauth_github
@@ -46,7 +46,7 @@ defmodule GoalServer.Mixfile do
     [
       {:phoenix, "~> 1.1.1"},
       {:phoenix_ecto, "~> 2.0"},
-      {:mariaex, ">= 0.0.0"},
+      {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.3"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.9"},

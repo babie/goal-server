@@ -167,7 +167,7 @@ defmodule GoalServer.Goal.Commands do
               FROM
                 goal_trees AS t2
               WHERE
-                t2.descendant_id = ?
+                t2.descendant_id = $1::integer
                 AND
                 t2.generations = 1
             )
@@ -175,7 +175,7 @@ defmodule GoalServer.Goal.Commands do
             t1.generations = 1
         )
         AND
-        g.id <> ?
+        g.id <> $2::integer
       ORDER BY
         g.position ASC
       ;
