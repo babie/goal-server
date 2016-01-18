@@ -20,7 +20,7 @@ defmodule GoalServer.GoalTest do
     gcs1 = fixture(:children, parent: c1)
     gcs2 = fixture(:children, parent: c2)
     gcs3 = fixture(:children, parent: c3)
-    [root, c1, c2, c3] = [root, c1, c2, c3] |> Enum.map(&(Repo.preload(&1, [:children, :owner])))
+    [root, c1, c2, c3] = [root, c1, c2, c3] |> Enum.map(&(Repo.preload(&1, [:owner])))
     
     {:ok, user: user, root: root, children: [c1, c2, c3], gcs1: gcs1, gcs2: gcs2, gcs3: gcs3}
   end
@@ -44,6 +44,7 @@ defmodule GoalServer.GoalTest do
   end
 
   test "get children", %{root: root, children: children} do
+    root = root |> Repo.preload(:children)
     new_children_ids = root.children |> Enum.sort(&(&1.position < &2.position)) |> Enum.map(&(&1.id))
     children_ids = children |> Enum.map(&(&1.id))
     assert new_children_ids == children_ids
@@ -54,5 +55,15 @@ defmodule GoalServer.GoalTest do
     new_sibling_ids = c2 |> Goal.Commands.siblings |> Enum.map(&(&1.id))
     sibling_ids = [c1, c3] |> Enum.map(&(&1.id))
     assert new_sibling_ids == sibling_ids
+  end
+
+  test "insert with valid attributes", %{user: user, root: root, children: [c1, c2, c3]} do
+    attrs = Map.merge(@valid_attrs, %{parent_id: root.id, position: 1, owned_by: user.id})
+    changeset = Goal.changeset(%Goal{}, attrs)
+    {:ok, new} = Goal.Commands.insert(changeset)
+    root = root |> Repo.preload(:children)
+    new_children_ids = root.children |> Enum.sort(&(&1.position < &2.position)) |> Enum.map(&(&1.id))
+    children_ids = [c1, new, c2, c3] |> Enum.map(&(&1.id))
+    assert new_children_ids == children_ids
   end
 end
