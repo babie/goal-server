@@ -6,7 +6,7 @@ defmodule GoalServer.Goal do
     field :body, :string
     field :status, :string
     field :position, :integer
-    field :parent_id, :integer, virtual: true
+    field :parent_id, :integer
     field :generations, :integer, virtual: true
     has_many :descendant_tree, GoalServer.GoalTree, foreign_key: :ancestor_id, on_delete: :delete_all
     has_many :descendants, through: [:descendant_tree, :descendant], on_delete: :delete_all
