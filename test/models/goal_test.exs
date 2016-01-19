@@ -57,7 +57,26 @@ defmodule GoalServer.GoalTest do
     assert new_sibling_ids == sibling_ids
   end
 
-  test "insert with valid attributes", %{user: user, root: root, children: [c1, c2, c3]} do
+  test "get self_and_descendants", %{children: [_, c2, _], gcs2: [_, gcs2_2, _]} do
+    gcs2_2_children = fixture(:children, parent: gcs2_2)
+    [first|ds] = Goal.Commands.self_and_descendants(c2)
+    assert first.id == c2.id
+    assert length(ds) == 6
+    Enum.each(gcs2_2_children, fn(g) ->
+      assert Enum.any?(ds, fn(d) -> d.id == g.id end)
+    end)
+  end
+
+  test "get descendants", %{children: [_, c2, _], gcs2: [_, gcs2_2, _]} do
+    gcs2_2_children = fixture(:children, parent: gcs2_2)
+    ds = Goal.Commands.descendants(c2)
+    assert length(ds) == 6
+    Enum.each(gcs2_2_children, fn(g) ->
+      assert Enum.any?(ds, fn(d) -> d.id == g.id end)
+    end)
+  end
+
+  test "insert", %{user: user, root: root, children: [c1, c2, c3]} do
     attrs = Map.merge(@valid_attrs, %{parent_id: root.id, position: 1, owned_by: user.id})
     changeset = Goal.changeset(%Goal{}, attrs)
     {:ok, new} = Goal.Commands.insert(changeset)
