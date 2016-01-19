@@ -33,8 +33,11 @@ end
 defmodule GoalServer.Goal.Commands do
   import Ecto.Query, only: [from: 1, from: 2]
 
+  alias Ecto.Adapters.SQL
   alias GoalServer.Repo
   alias GoalServer.Goal
+  use GoalServer.Model.Util
+  
 
   def update_positions(changeset) do
     parent_id_changed = Map.has_key?(changeset.changes, :parent_id)
@@ -118,6 +121,8 @@ defmodule GoalServer.Goal.Commands do
   def update(changeset) do
     if changeset.valid? do
       Repo.transaction(fn ->
+        check_descendants(changeset)
+
         changeset = update_positions(changeset)
 
         goal = changeset |> Repo.update!
@@ -127,6 +132,67 @@ defmodule GoalServer.Goal.Commands do
     else
       {:error, changeset}
     end
+  end
+
+  def check_descendants(changeset) do
+    new_parent_id = Map.get(changeset.changes, :parent_id)
+    if new_parent_id do
+      ds = descendants(changeset.model)
+      if Enum.any?(ds, fn(d) -> d.id == new_parent_id end) do
+        raise ArgumentError, message: "TODO: can't move to self descedants"
+      end
+    end
+  end
+
+  def descendants(goal) do
+    [_first|rest] = self_and_descendants(goal)
+    rest
+  end
+
+  def self_and_descendants(goal) do
+    SQL.query!(
+      Repo,
+      """
+      WITH RECURSIVE
+        goal_tree (
+          id,
+          title,
+          body,
+          status,
+          parent_id,
+          position,
+          owner_id,
+          inserted_at,
+          updated_at,
+          depth
+        )
+      AS (
+          SELECT
+            *, 0
+          FROM
+            goals
+          WHERE
+            id = $1::integer
+        UNION ALL
+          SELECT
+            g.*, t.depth + 1
+          FROM
+            goal_tree AS t
+            JOIN
+              goals AS g
+            ON
+              t.id = g.parent_id
+      )
+      SELECT
+        t.*
+      FROM
+        goal_tree AS t
+      ORDER BY
+        t.depth, t.position
+      ;
+      """,
+      [goal.id]
+    ) |> load_into(Goal)
   end
 
   def siblings(goal) do

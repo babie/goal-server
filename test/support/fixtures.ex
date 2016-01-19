@@ -13,7 +13,7 @@ defmodule GoalServer.Fixtures do
   def fixture(:root, assoc) do
     user = assoc[:user] || fixture(:user)
     Repo.insert! %Goal{
-      title: "root",
+      title: "goal",
       status: "root",
       position: 0,
       owned_by: user.id,
@@ -26,7 +26,7 @@ defmodule GoalServer.Fixtures do
     Enum.reduce([0, 1, 2], [], fn(i, acc) -> 
 
       child = Repo.insert! %Goal{
-        title: "child-#{i}",
+        title: "#{parent.title}-#{i}",
         status: "todo",
         parent_id: parent.id,
         position: i,

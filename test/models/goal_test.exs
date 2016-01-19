@@ -93,4 +93,12 @@ defmodule GoalServer.GoalTest do
     children_ids = [c1, new, c2, c3] |> Enum.map(&(&1.id))
     assert new_children_ids == children_ids
   end
+
+  test "can't move subtree", %{children: [_c1, c2, _c3], gcs2: [_gcs2_1, gcs2_2, _gcs2_3]}do
+    fixture(:children, parent: gcs2_2)
+    changeset = Goal.changeset(c2, %{parent_id: gcs2_2.id, position: 1})
+    assert_raise ArgumentError, fn ->
+      Goal.Commands.update(changeset)
+    end
+  end
 end
