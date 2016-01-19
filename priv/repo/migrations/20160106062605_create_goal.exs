@@ -6,7 +6,7 @@ defmodule GoalServer.Repo.Migrations.CreateGoal do
       add :title, :string, null: false
       add :body, :text
       add :status, :string, null: false
-      add :parent_id, references(:goals, on_delete: :nothing)
+      add :parent_id, references(:goals, on_delete: :delete_all)
       add :position, :integer
       add :owned_by, references(:users, on_delete: :nothing)
 
