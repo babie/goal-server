@@ -119,7 +119,7 @@ defmodule GoalServer.Goal.Commands do
   end
 
   def update(changeset) do
-    if changeset.valid? do
+    if changeset.valid? && !Goal.Commands.root?(changeset.model) do
       Repo.transaction(fn ->
         check_descendants(changeset)
 
@@ -130,6 +130,9 @@ defmodule GoalServer.Goal.Commands do
         goal
       end)
     else
+      if Goal.Commands.root?(changeset.model) do
+        changeset = Ecto.Changeset.add_error(changeset, :parent_id, "can't be empty")
+      end
       {:error, changeset}
     end
   end
@@ -195,6 +198,10 @@ defmodule GoalServer.Goal.Commands do
     ) |> load_into(Goal)
   end
 
+  def root?(goal) do
+    goal.parent_id == nil
+  end
+  
   def siblings(goal) do
     from(
       g in Goal,

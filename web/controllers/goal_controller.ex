@@ -40,7 +40,7 @@ defmodule GoalServer.GoalController do
     goal = Repo.get!(Goal, id)
     changeset = Goal.changeset(goal, goal_params)
 
-    case Repo.update(changeset) do
+    case Goal.Commands.update(changeset) do
       {:ok, goal} ->
         render(conn, "show.json", goal: goal)
       {:error, changeset} ->
