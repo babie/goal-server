@@ -25,7 +25,6 @@ defmodule GoalServer.Goal do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
-    |> foreign_key_constraint(:parent_id)
   end
 
 end
