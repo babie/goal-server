@@ -28,6 +28,24 @@ defmodule GoalServer.Goal.Commands do
     ) |> Repo.update_all([])
   end
 
+  def update_positions_on_move_subtree(old_parent_id, old_position, new_parent_id, new_position) do
+    from(
+      g in Goal,
+      where:
+        g.parent_id == ^new_parent_id and
+        g.position >= ^new_position,
+      update: [inc: [position: 1]]
+    ) |> Repo.update_all([])
+
+    from(
+      g in Goal,
+      where:
+        g.parent_id == ^old_parent_id and
+        g.position > ^old_position,
+      update: [inc: [position: -1]]
+    ) |> Repo.update_all([])
+  end
+
   def update_positions(changeset) do
     parent_id_changed = Map.has_key?(changeset.changes, :parent_id)
     old_parent_id = changeset.model.parent_id
@@ -37,21 +55,8 @@ defmodule GoalServer.Goal.Commands do
 
 
     if old_parent_id && old_position do # not create
-      if parent_id_changed do # move tree
-        from(
-          g in Goal,
-          where:
-            g.parent_id == ^new_parent_id and
-            g.position >= ^new_position,
-          update: [inc: [position: 1]]
-        ) |> Repo.update_all([])
-        from(
-          g in Goal,
-          where:
-            g.parent_id == ^old_parent_id and
-            g.position > ^old_position,
-          update: [inc: [position: -1]]
-        ) |> Repo.update_all([])
+      if parent_id_changed do # move subtree
+        update_positions_on_move_subtree(old_parent_id, old_position, new_parent_id, new_position)
       else # move between children
         cond do
           # down
