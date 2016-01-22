@@ -1,4 +1,4 @@
-defmodule GoalServer.Model.Util do
+defmodule GoalServer.Model.Utils do
   defmacro __using__(_opts) do
     quote do
       defp load_into(response, model) do

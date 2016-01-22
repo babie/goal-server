@@ -4,7 +4,7 @@ defmodule GoalServer.Goal.Commands do
   alias Ecto.Adapters.SQL
   alias GoalServer.Repo
   alias GoalServer.Goal
-  use GoalServer.Model.Util
+  use GoalServer.Model.Utils
 
   def update_positions_on_move_up(parent_id, old_position, new_position) do
     from(
