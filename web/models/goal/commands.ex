@@ -17,6 +17,17 @@ defmodule GoalServer.Goal.Commands do
     ) |> Repo.update_all([])
   end
 
+  def update_positions_on_move_down(parent_id, old_position, new_position) do
+    from(
+      g in Goal,
+      where:
+        g.parent_id == ^parent_id and
+        g.position > ^old_position and
+        g.position < ^new_position,
+      update: [inc: [position: -1]]
+    ) |> Repo.update_all([])
+  end
+
   def update_positions(changeset) do
     parent_id_changed = Map.has_key?(changeset.changes, :parent_id)
     old_parent_id = changeset.model.parent_id
@@ -41,21 +52,13 @@ defmodule GoalServer.Goal.Commands do
             g.position > ^old_position,
           update: [inc: [position: -1]]
         ) |> Repo.update_all([])
-      else # move on children
+      else # move between children
         cond do
           # down
           old_position < new_position ->
-            from(
-              g in Goal,
-              where:
-                g.parent_id == ^old_parent_id and
-                g.position > ^old_position and
-                g.position < ^new_position,
-              update: [inc: [position: -1]]
-            ) |> Repo.update_all([])
+            update_positions_on_move_down(old_parent_id, old_position, new_position)
             changes = Map.merge(changeset.changes, %{position: new_position - 1})
             changeset = Map.put(changeset, :changes, changes)
-
           # up
           old_position > new_position ->
             update_positions_on_move_up(old_parent_id, old_position, new_position)
