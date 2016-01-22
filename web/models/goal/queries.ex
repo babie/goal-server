@@ -21,12 +21,27 @@ defmodule GoalServer.Goal.Queries do
     ) |> Repo.all
   end
 
+  def descendant_ids(goal) do
+    [_first|rest] = self_and_descendant_ids(goal)
+    rest
+  end
+
+  def self_and_descendant_ids(goal) do
+    self_and_descendants_sql(goal)
+    |> load([:id])
+    |> Enum.map(fn(kw) -> Keyword.get(kw, :id) end)
+  end
+
   def descendants(goal) do
     [_first|rest] = self_and_descendants(goal)
     rest
   end
 
   def self_and_descendants(goal) do
+    self_and_descendants_sql(goal) |> load_into(Goal)
+  end
+
+  def self_and_descendants_sql(goal) do
     SQL.query!(
       Repo,
       """
@@ -69,7 +84,7 @@ defmodule GoalServer.Goal.Queries do
       ;
       """,
       [goal.id]
-    ) |> load_into(Goal)
+    )
   end
 
 end

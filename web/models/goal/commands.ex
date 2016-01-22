@@ -122,8 +122,8 @@ defmodule GoalServer.Goal.Commands do
   def block_move_descendant_to_ancestor(changeset) do
     new_parent_id = Map.get(changeset.changes, :parent_id)
     if new_parent_id do
-      ds = Goal.Queries.descendants(changeset.model)
-      if Enum.any?(ds, fn(d) -> d.id == new_parent_id end) do
+      d_ids = Goal.Queries.descendant_ids(changeset.model)
+      if Enum.any?(d_ids, fn(d_id) -> d_id == new_parent_id end) do
         raise ArgumentError, message: "TODO: can't move to self descedants"
       end
     end

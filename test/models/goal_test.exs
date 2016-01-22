@@ -142,6 +142,7 @@ defmodule GoalServer.GoalTest do
     assert copied.position == 1
 
     copied_ds_titles = copied |> Goal.Queries.descendants |> Enum.map(&(&1.title))
+    copied |> Goal.Queries.self_and_descendant_ids
     assert copied_ds_titles == ds_titles
   end
 end
