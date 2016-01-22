@@ -104,7 +104,7 @@ defmodule GoalServer.Goal.Commands do
   def update(changeset) do
     if changeset.valid? && !Goal.Commands.root?(changeset.model) do
       Repo.transaction(fn ->
-        check_descendants(changeset)
+        block_move_descendant_to_ancestor(changeset)
 
         changeset = update_positions(changeset)
 
@@ -120,7 +120,7 @@ defmodule GoalServer.Goal.Commands do
     end
   end
 
-  def check_descendants(changeset) do
+  def block_move_descendant_to_ancestor(changeset) do
     new_parent_id = Map.get(changeset.changes, :parent_id)
     if new_parent_id do
       ds = descendants(changeset.model)
