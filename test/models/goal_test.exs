@@ -59,7 +59,7 @@ defmodule GoalServer.GoalTest do
 
   test "get self_and_descendants", %{children: [_, c2, _], gcs2: [_, gcs2_2, _]} do
     gcs2_2_children = fixture(:children, parent: gcs2_2)
-    [first|ds] = Goal.Commands.self_and_descendants(c2)
+    [first|ds] = Goal.Queries.self_and_descendants(c2)
     assert first.id == c2.id
     assert length(ds) == 6
     Enum.each(gcs2_2_children, fn(g) ->
@@ -69,7 +69,7 @@ defmodule GoalServer.GoalTest do
 
   test "get descendants", %{children: [_, c2, _], gcs2: [_, gcs2_2, _]} do
     gcs2_2_children = fixture(:children, parent: gcs2_2)
-    ds = Goal.Commands.descendants(c2)
+    ds = Goal.Queries.descendants(c2)
     assert length(ds) == 6
     Enum.each(gcs2_2_children, fn(g) ->
       assert Enum.any?(ds, fn(d) -> d.id == g.id end)
@@ -124,7 +124,7 @@ defmodule GoalServer.GoalTest do
   test "delete", %{root: root, children: [_c1, c2, _c3], gcs2: [_gcs2_1, gcs2_2, _gcs2_3]} do
     ds = fixture(:children, parent: gcs2_2)
     Repo.delete!(c2)
-    all = Goal.Commands.self_and_descendants(root)
+    all = Goal.Queries.self_and_descendants(root)
     Enum.each([c2|ds], fn(g) ->
       refute Enum.any?(all, fn(e) -> e.id == g.id end)
     end)
@@ -141,7 +141,7 @@ defmodule GoalServer.GoalTest do
     assert copied.parent_id == root.id
     assert copied.position == 1
 
-    copied_ds_titles = copied |> Goal.Commands.descendants |> Enum.map(&(&1.title))
+    copied_ds_titles = copied |> Goal.Queries.descendants |> Enum.map(&(&1.title))
     assert copied_ds_titles == ds_titles
   end
 end

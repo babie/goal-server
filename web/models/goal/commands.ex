@@ -4,7 +4,6 @@ defmodule GoalServer.Goal.Commands do
   alias Ecto.Adapters.SQL
   alias GoalServer.Repo
   alias GoalServer.Goal
-  use GoalServer.Model.Utils
 
   def update_positions_on_move_up(parent_id, old_position, new_position) do
     from(
@@ -123,62 +122,11 @@ defmodule GoalServer.Goal.Commands do
   def block_move_descendant_to_ancestor(changeset) do
     new_parent_id = Map.get(changeset.changes, :parent_id)
     if new_parent_id do
-      ds = descendants(changeset.model)
+      ds = Goal.Queries.descendants(changeset.model)
       if Enum.any?(ds, fn(d) -> d.id == new_parent_id end) do
         raise ArgumentError, message: "TODO: can't move to self descedants"
       end
     end
-  end
-
-  def descendants(goal) do
-    [_first|rest] = self_and_descendants(goal)
-    rest
-  end
-
-  def self_and_descendants(goal) do
-    SQL.query!(
-      Repo,
-      """
-      WITH RECURSIVE
-        goal_tree (
-          id,
-          title,
-          body,
-          status,
-          parent_id,
-          position,
-          owned_by,
-          inserted_at,
-          updated_at,
-          depth
-        )
-      AS (
-          SELECT
-            *, 0
-          FROM
-            goals
-          WHERE
-            id = $1::integer
-        UNION ALL
-          SELECT
-            g.*, t.depth + 1
-          FROM
-            goal_tree AS t
-            JOIN
-              goals AS g
-            ON
-              t.id = g.parent_id
-      )
-      SELECT
-        t.*
-      FROM
-        goal_tree AS t
-      ORDER BY
-        t.depth, t.position
-      ;
-      """,
-      [goal.id]
-    ) |> load_into(Goal)
   end
 
   def copy(goal, parent_id, position) do
