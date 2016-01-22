@@ -142,7 +142,22 @@ defmodule GoalServer.GoalTest do
     assert copied.position == 1
 
     copied_ds_titles = copied |> Goal.Queries.descendants |> Enum.map(&(&1.title))
-    copied |> Goal.Queries.self_and_descendant_ids
+    assert copied_ds_titles == ds_titles
+  end
+
+  test "copy into subtree", %{children: [_c1, c2, _c3], gcs2: [_gcs2_1, gcs2_2, _gcs2_3]} do
+    fixture(:children, parent: gcs2_2)
+    ds_titles = c2 |> Goal.Queries.descendants |> Enum.map(&(&1.title))
+    Goal.Commands.copy(c2, gcs2_2.id,  1)
+    
+    gcs2_2 = gcs2_2 |> Repo.preload([:children])
+    [_ggc1, copied, _ggc2, _ggc3] = gcs2_2.children
+                                    |> Enum.sort(&(&1.position < &2.position))
+    assert copied.title == c2.title
+    assert copied.parent_id == gcs2_2.id
+    assert copied.position == 1
+
+    copied_ds_titles = copied |> Goal.Queries.descendants |> Enum.map(&(&1.title))
     assert copied_ds_titles == ds_titles
   end
 end
