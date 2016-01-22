@@ -46,6 +46,16 @@ defmodule GoalServer.Goal.Commands do
     ) |> Repo.update_all([])
   end
 
+  def update_positions_on_insert(new_parent_id, new_position) do
+    from(
+      g in Goal,
+      where:
+        g.parent_id == ^new_parent_id and
+        g.position >= ^new_position,
+      update: [inc: [position: 1]]
+    ) |> Repo.update_all([])
+  end
+
   def update_positions(changeset) do
     parent_id_changed = Map.has_key?(changeset.changes, :parent_id)
     old_parent_id = changeset.model.parent_id
@@ -71,13 +81,7 @@ defmodule GoalServer.Goal.Commands do
       end
     else
       # insert
-      from(
-        g in Goal,
-        where:
-          g.parent_id == ^new_parent_id and
-          g.position >= ^new_position,
-        update: [inc: [position: 1]]
-      ) |> Repo.update_all([])
+      update_positions_on_insert(new_parent_id, new_position)
     end
 
     changeset
@@ -194,13 +198,7 @@ defmodule GoalServer.Goal.Commands do
 
   def copy(goal, parent_id, position) do
     Repo.transaction(fn ->
-      from(
-        g in Goal,
-        where:
-          g.parent_id == ^parent_id and
-          g.position >= ^position,
-        update: [inc: [position: 1]]
-      ) |> Repo.update_all([])
+      update_positions_on_insert(parent_id, position)
 
       SQL.query!(
         Repo,
