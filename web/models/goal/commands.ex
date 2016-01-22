@@ -6,6 +6,16 @@ defmodule GoalServer.Goal.Commands do
   alias GoalServer.Goal
   use GoalServer.Model.Util
 
+  def update_positions_on_move_up(parent_id, old_position, new_position) do
+    from(
+      g in Goal,
+      where:
+        g.parent_id == ^parent_id and
+        g.position < ^old_position and
+        g.position >= ^new_position,
+      update: [inc: [position: 1]]
+    ) |> Repo.update_all([])
+  end
 
   def update_positions(changeset) do
     parent_id_changed = Map.has_key?(changeset.changes, :parent_id)
@@ -48,14 +58,7 @@ defmodule GoalServer.Goal.Commands do
 
           # up
           old_position > new_position ->
-            from(
-              g in Goal,
-              where:
-                g.parent_id == ^old_parent_id and
-                g.position < ^old_position and
-                g.position >= ^new_position,
-              update: [inc: [position: 1]]
-            ) |> Repo.update_all([])
+            update_positions_on_move_up(old_parent_id, old_position, new_position)
         end
       end
     else
