@@ -21,10 +21,10 @@ defmodule GoalServer.GoalControllerTest do
     {:ok, conn: put_req_header(conn, "accept", "application/json"), user: user, root: root, children: children}
   end
 
-  test "lists all entries on index", %{conn: conn, root: root, children: children} do
+  test "lists all entries on index", %{conn: conn, root: root} do
     conn = get conn, goal_path(conn, :index)
     json_ids = json_response(conn, 200)["data"] |> Enum.map(&(&1["id"]))
-    ids = [root|children] |> Enum.map(&(&1.id))
+    ids = root |> Goal.Queries.self_and_descendants |> Enum.map(&(&1.id))
     assert json_ids == ids
   end
 
@@ -94,6 +94,19 @@ defmodule GoalServer.GoalControllerTest do
     conn = delete conn, goal_path(conn, :delete, root)
     assert response(conn, 204)
     refute Repo.get(Goal, root.id)
+  end
+
+  test "copy", %{children: [_, c2, _]} do
+    [_, c2_2, _] = fixture(:children, parent: c2)
+    tgt_titles = c2 |> Goal.Queries.self_and_descendants |> Enum.map(&(&1.title))
+
+    conn = post conn, goal_path(conn, :copy, c2, %{"dest_parent_id" => c2_2.id, "dest_position" => 0})
+
+    data = json_response(conn, 201)["data"]
+    assert data
+
+    dest_titles = data |> Enum.map(&(&1["title"]))
+    assert tgt_titles == dest_titles
   end
 
   test "get children", %{conn: conn, root: root, children: children} do

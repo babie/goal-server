@@ -4,6 +4,7 @@ defmodule GoalServer.Goal.Commands do
   alias Ecto.Adapters.SQL
   alias GoalServer.Repo
   alias GoalServer.Goal
+  use GoalServer.Model.Utils
 
   def update_positions_on_move_up(parent_id, old_position, new_position) do
     from(
@@ -194,10 +195,12 @@ defmodule GoalServer.Goal.Commands do
             ON
               s1.parent_id = s2.id
         ) AS q1
+        RETURNING
+          *
         ;
         """,
         [parent_id, position, goal.id]
-      )
+      ) |> load_into(Goal)
     end)
   end
 end

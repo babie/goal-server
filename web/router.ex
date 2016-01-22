@@ -39,6 +39,7 @@ defmodule GoalServer.Router do
     pipe_through :api
 
     resources "/goals", GoalController, except: [:new, :edit]
+    post "/goals/:target_id/copy", GoalController, :copy
     get "/goals/:id/children", GoalController, :children
     get "/goals/:id/parent", GoalController, :parent
     get "/goals/:id/siblings", GoalController, :siblings

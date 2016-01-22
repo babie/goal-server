@@ -60,6 +60,26 @@ defmodule GoalServer.GoalController do
     send_resp(conn, :no_content, "")
   end
 
+  def copy(conn, %{"target_id" => target_id, "dest_parent_id" => dest_parent_id, "dest_position" => dest_position}) do
+    target_goal = Repo.get!(Goal, target_id)
+    dest_parent = Repo.get!(Goal, dest_parent_id)
+    dest_goal = Repo.get_by(Goal, parent_id: dest_parent_id, position: dest_position)
+    if dest_parent && dest_goal == nil do
+      dest_positiong = "0"
+    end
+
+     case Goal.Commands.copy(target_goal, String.to_integer(dest_parent_id), String.to_integer(dest_position)) do
+      {:ok, goals} ->
+        conn
+        |> put_status(:created)
+        |> render("index.json", goals: goals)
+      {:error, exception} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(GoalServer.GoalView, "error.json", exception: exception)
+    end
+  end
+
   def children(conn, %{"id" => id}) do
     goal = Goal |> Repo.get!(id) |> Repo.preload(:children)
     # TODO: user check

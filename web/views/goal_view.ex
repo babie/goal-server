@@ -20,4 +20,10 @@ defmodule GoalServer.GoalView do
       owned_by: goal.owned_by,
     }
   end
+
+  def render("error.json", %{exception: exception}) do
+    # When encoded, the changeset returns its errors
+    # as a JSON object. So we just pass it forward.
+    %{errors: exception.message}
+  end
 end
