@@ -77,7 +77,7 @@ defmodule GoalServer.GoalController do
   def siblings(conn, %{"id" => id}) do
     goal = Goal |> Repo.get!(id)
     # TODO: user check
-    siblings = goal |> Goal.Commands.siblings
+    siblings = goal |> Goal.Queries.siblings
     render(conn, "index.json", goals: siblings)
   end
 end

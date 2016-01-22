@@ -181,17 +181,6 @@ defmodule GoalServer.Goal.Commands do
     ) |> load_into(Goal)
   end
 
-  def siblings(goal) do
-    from(
-      g in Goal,
-      where:
-        g.parent_id == ^goal.parent_id and
-        g.id != ^goal.id,
-      order_by: g.position,
-      select: g
-    ) |> Repo.all
-  end
-
   def copy(goal, parent_id, position) do
     Repo.transaction(fn ->
       update_positions_on_insert(parent_id, position)
