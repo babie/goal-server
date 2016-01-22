@@ -163,7 +163,7 @@ defmodule GoalServer.Goal.Commands do
           status,
           parent_id,
           position,
-          owner_id,
+          owned_by,
           inserted_at,
           updated_at,
           depth
@@ -210,6 +210,83 @@ defmodule GoalServer.Goal.Commands do
       order_by: g.position,
       select: g
     ) |> Repo.all
+  end
+
+  def copy(goal, parent_id, position) do
+    Repo.transaction(fn ->
+      from(
+        g in Goal,
+        where:
+          g.parent_id == ^parent_id and
+          g.position >= ^position,
+        update: [inc: [position: 1]]
+      ) |> Repo.update_all([])
+
+      SQL.query!(
+        Repo,
+        """
+        INSERT INTO
+          goals (
+            id,
+            title,
+            body,
+            status,
+            parent_id,
+            position,
+            owned_by,
+            inserted_at,
+            updated_at
+          )
+        SELECT
+          new_id,
+          title,
+          body,
+          status,
+          COALESCE(new_parent_id, $1::integer),
+          new_position,
+          owned_by,
+          inserted_at,
+          updated_at
+        FROM (
+          WITH RECURSIVE subtrees AS (
+            SELECT
+              *,
+              nextval('goals_id_seq') AS new_id,
+              $2::integer AS new_position
+            FROM
+              goals
+            WHERE
+              id = $3::integer
+            UNION ALL
+            SELECT
+              goals.*,
+              nextval('goals_id_seq') AS new_id,
+              goals.position AS new_position
+            FROM
+              subtrees
+              JOIN goals ON subtrees.id = goals.parent_id
+          )
+          SELECT
+            s1.new_id,
+            s1.title,
+            s1.body,
+            s1.status,
+            s2.new_id AS new_parent_id,
+            s1.new_position AS new_position,
+            s1.owned_by,
+            s1.inserted_at,
+            s1.updated_at
+          FROM
+            subtrees s1
+            LEFT JOIN
+              subtrees s2
+            ON
+              s1.parent_id = s2.id
+        ) AS q1
+        """,
+        [parent_id, position, goal.id]
+      )
+    end)
   end
 end
 

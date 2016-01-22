@@ -129,4 +129,19 @@ defmodule GoalServer.GoalTest do
       refute Enum.any?(all, fn(e) -> e.id == g.id end)
     end)
   end
+
+  test "copy", %{root: root, gcs2: [_gcs2_1, gcs2_2, _gcs2_3]} do
+    ds_titles = fixture(:children, parent: gcs2_2) |> Enum.map(&(&1.title))
+    Goal.Commands.copy(gcs2_2, root.id, 1)
+    
+    root = root |> Repo.preload([:children])
+    [_c1, copied, _c2, _c3] = root.children
+                              |> Enum.sort(&(&1.position < &2.position))
+    assert copied.title == gcs2_2.title
+    assert copied.parent_id == root.id
+    assert copied.position == 1
+
+    copied_ds_titles = copied |> Goal.Commands.descendants |> Enum.map(&(&1.title))
+    assert copied_ds_titles == ds_titles
+  end
 end
