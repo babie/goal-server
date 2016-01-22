@@ -261,6 +261,7 @@ defmodule GoalServer.Goal.Commands do
             ON
               s1.parent_id = s2.id
         ) AS q1
+        ;
         """,
         [parent_id, position, goal.id]
       )
