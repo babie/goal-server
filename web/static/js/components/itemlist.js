@@ -1,20 +1,21 @@
 import React from 'react';
 import {Component} from 'flumpt';
+import ItemComponent from './item.js';
 
 class ItemListComponent extends Component {
   render() {
     return (
       <li className="column">
         <ul className="rows">
-          <li className="row">
-            Title 1-1
-          </li>
-          <li className="row">
-            Title 1-2
-          </li>
-          <li className="row">
-            Title 1-3
-          </li>
+          <ItemComponent {...this.props} />
+          <ItemComponent {...this.props} />
+          <ItemComponent {...this.props} />
+          <ItemComponent {...this.props} />
+          <ItemComponent {...this.props} />
+          <ItemComponent {...this.props} />
+          <ItemComponent {...this.props} />
+          <ItemComponent {...this.props} />
+          <ItemComponent {...this.props} />
         </ul>
       </li>
     );
