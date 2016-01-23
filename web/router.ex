@@ -23,6 +23,7 @@ defmodule GoalServer.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    get "/columned-treeview", PageController, :columned_treeview
     resources "/users", UserController
     get "/goals/:id", GoalController, :show_html
   end
