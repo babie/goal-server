@@ -42,6 +42,141 @@ const app = new GoalApp({
 page('/goals/:id', function(ctx, next) {
   const state = {
     id: parseInt(ctx.params.id),
+    // FIXME: temporary tangible data
+    goal_tree: {
+      id: 1,
+      title: "root",
+      body: "some contents",
+      status: "todo",
+      parent_id: null,
+      position: 0,
+      owned_by: 1,
+      children: [
+        {
+          id: 2,
+          title: "c1",
+          body: "some contents",
+          status: "todo",
+          parent_id: 1,
+          position: 0,
+          owned_by: 1,
+          children: [
+            {
+              id: 3,
+              title: "c1-1",
+              body: "some contents",
+              status: "todo",
+              parent_id: 2,
+              position: 0,
+              owned_by: 1,
+              children: []
+            },
+            {
+              id: 4,
+              title: "c1-2",
+              body: "some contents",
+              status: "todo",
+              parent_id: 2,
+              position: 1,
+              owned_by: 1,
+              children: []
+            },
+            {
+              id: 5,
+              title: "c1-3",
+              body: "some contents",
+              status: "todo",
+              parent_id: 2,
+              position: 2,
+              owned_by: 1,
+              children: []
+            },
+          ]
+        },
+        {
+          id: 6,
+          title: "c2",
+          body: "some contents",
+          status: "todo",
+          parent_id: 1,
+          position: 0,
+          owned_by: 1,
+          children: [
+            {
+              id: 7,
+              title: "c2-1",
+              body: "some contents",
+              status: "todo",
+              parent_id: 6,
+              position: 0,
+              owned_by: 1,
+              children: []
+            },
+            {
+              id: 8,
+              title: "c2-2",
+              body: "some contents",
+              status: "todo",
+              parent_id: 6,
+              position: 1,
+              owned_by: 1,
+              children: []
+            },
+            {
+              id: 9,
+              title: "c2-3",
+              body: "some contents",
+              status: "todo",
+              parent_id: 6,
+              position: 2,
+              owned_by: 1,
+              children: []
+            },
+          ]
+        },
+        {
+          id: 10,
+          title: "c3",
+          body: "some contents",
+          status: "todo",
+          parent_id: 1,
+          position: 0,
+          owned_by: 1,
+          children: [
+            {
+              id: 11,
+              title: "c3-1",
+              body: "some contents",
+              status: "todo",
+              parent_id: 10,
+              position: 0,
+              owned_by: 1,
+              children: []
+            },
+            {
+              id: 12,
+              title: "c3-2",
+              body: "some contents",
+              status: "todo",
+              parent_id: 10,
+              position: 1,
+              owned_by: 1,
+              children: []
+            },
+            {
+              id: 13,
+              title: "c3-3",
+              body: "some contents",
+              status: "todo",
+              parent_id: 10,
+              position: 2,
+              owned_by: 1,
+              children: []
+            },
+          ]
+        },
+      ]
+    }
   }
   app.update(initState => (state));
 });
