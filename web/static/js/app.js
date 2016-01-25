@@ -43,6 +43,9 @@ page('/goals/:id', function(ctx, next) {
   const state = {
     id: parseInt(ctx.params.id),
     // FIXME: temporary tangible data
+    self_and_desendant_ids: [
+      1, 6, 8
+    ],
     goal_tree: {
       id: 1,
       title: "root",
