@@ -3,6 +3,17 @@ import {Component} from 'flumpt';
 import _ from 'lodash';
 
 class ItemTreeComponent extends Component {
+  componentDidMount() {
+    if (this.props.id === this.props.self_and_desendant_ids[0]) {
+      const width = this.refs.current.offsetWidth;
+      const height = this.refs.current.offsetHeight;
+      const x = width * 1.5 + width * this.props.h;
+      const y = height * this.props.v;
+      setTimeout(function() { 
+        window.scrollTo(x, y);
+      }, 1000);
+    }
+  }
   render() {
     let descendants_tree = null;
     if (this.props.children) {
@@ -14,10 +25,14 @@ class ItemTreeComponent extends Component {
     if (_.some(this.props.self_and_desendant_ids, (v) => (v === this.props.id || v === this.props.parent_id))) {
       open = "open";
     }
+    let current = null;
+    if (this.props.id === this.props.self_and_desendant_ids[0]) {
+      current = "current";
+    }
 
     return (
       <li className={open}>
-        <section>
+        <section className={current} ref="current">
           {this.props.title}
         </section>
         <ul>
