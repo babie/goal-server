@@ -1,5 +1,5 @@
 
-function scroll(x, y, duration) {
+function scrollWithEase(x, y, duration) {
   const step = Math.PI / (duration / 15);
   const width = window.scrollX;
   const height = window.scrollY;
@@ -22,4 +22,4 @@ function scroll(x, y, duration) {
   }, 15 );
 }
 
-export {scroll};
+export {scrollWithEase};
