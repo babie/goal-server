@@ -51,6 +51,7 @@ defmodule GoalServer.Mixfile do
       {:gettext, "~> 0.9"},
       {:cowboy, "~> 1.0"},
       # Test
+      {:power_assert, "~> 0.0.7", only: :test},
       {:mix_test_watch, "~> 0.2", only: :dev},
       {:excoveralls, "~> 0.4", only: :test},
       # Twitter/Github Sign-In
