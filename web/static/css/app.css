@@ -2,7 +2,6 @@
 @import "./test.css";
 
 html, body {
-  height: 100%;
 }
 
 .fa {
@@ -29,19 +28,35 @@ html, body {
   background-color: #333;
 }
 
+$goal-width: 250px;
+$goal-height: 100px;
+
+#wrap {
+  background-color: rgb(228, 228, 228);
+  width: calc(200vw - ($goal-width * 2));
+  height: calc(200vh - ($goal-height * 2));
+  padding-top: $goal-height;
+  padding-bottom: $goal-height;
+  padding-left: calc(50vw - ($goal-width / 2));
+  padding-right: calc(50vw - ($goal-width / 2));
+  overflow: scroll;
+}
+
 main {
-  width: 1325px; /* jsで可変に */
   ul {
     display: flex;
     flex-direction: column;
+    width: $goal-width;
     li {
       display: flex;
       flex-direction: row;
-      height: 100px;
+      width: $goal-width;
+      height: $goal-height;
       section {
-        min-width: 250px;
-        height: 100px;
-        border: thin solid;
+        min-width: $goal-width;
+        max-width: $goal-width;
+        height: $goal-height;
+        background-color: rgb(255, 255, 255);
       }
     }
     li:not(.open) {
