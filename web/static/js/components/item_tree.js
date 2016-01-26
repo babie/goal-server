@@ -1,6 +1,7 @@
 import React from 'react';
 import {Component} from 'flumpt';
 import _ from 'lodash';
+import {scroll} from '../utils.js';
 
 class ItemTreeComponent extends Component {
   componentDidMount() {
@@ -9,8 +10,8 @@ class ItemTreeComponent extends Component {
       const height = this.refs.current.offsetHeight;
       const x = width * 1.5 + width * this.props.h;
       const y = height * this.props.v;
-      setTimeout(function() { 
-        window.scrollTo(x, y);
+      setTimeout(function() {
+        scroll(x, y, 500);
       }, 1000);
     }
   }
