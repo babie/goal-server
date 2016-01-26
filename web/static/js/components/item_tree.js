@@ -6,8 +6,8 @@ class ItemTreeComponent extends Component {
   render() {
     let descendants_tree = null;
     if (this.props.children) {
-      descendants_tree = this.props.children.map((c) => {
-        return <ItemTreeComponent key={c.id} {...c} self_and_desendant_ids={this.props.self_and_desendant_ids} />;
+      descendants_tree = this.props.children.map((c, i) => {
+        return <ItemTreeComponent key={c.id} {...c} self_and_desendant_ids={this.props.self_and_desendant_ids} h={this.props.h + 1} v={this.props.v + i} />;
       });
     }
     let open = null;

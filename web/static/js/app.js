@@ -44,7 +44,7 @@ page('/goals/:id', function(ctx, next) {
     id: parseInt(ctx.params.id),
     // FIXME: temporary tangible data
     self_and_desendant_ids: [
-      1, 6, 8
+      8, 6, 1
     ],
     goal_tree: {
       id: 1,
