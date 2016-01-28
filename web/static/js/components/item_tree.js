@@ -1,7 +1,7 @@
 import React from 'react';
 import {Component} from 'flumpt';
 import _ from 'lodash';
-import {scrollWithEase, currentPosition} from '../utils.js';
+import {smoothScroll, currentPosition} from '../utils.js';
 
 class ItemTreeComponent extends Component {
   calculatePosition() {
@@ -18,19 +18,19 @@ class ItemTreeComponent extends Component {
     let [x, y] = currentPosition();
     if (ev.keyCode === 74) { // j
       y += height;
-      scrollWithEase(x, y, 400);
+      smoothScroll(x, y, 400);
     }
     if (ev.keyCode === 75) { // k
       y -= height;
-      scrollWithEase(x, y, 400);
+      smoothScroll(x, y, 400);
     }
     if (ev.keyCode === 72) { // h
       x -= width;
-      scrollWithEase(x, y, 400);
+      smoothScroll(x, y, 400);
     }
     if (ev.keyCode === 76) { // l
       x += width;
-      scrollWithEase(x, y, 400);
+      smoothScroll(x, y, 400);
     }
   }
   componentDidMount() {

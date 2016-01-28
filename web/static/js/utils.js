@@ -26,7 +26,7 @@ function currentPosition() {
   return [x, y];
 }
 
-function scrollWithEase(x, y, duration) {
+function smoothScroll(x, y, duration) {
   const step = Math.PI / (duration / 15);
   const width = window.scrollX;
   const height = window.scrollY;
@@ -73,4 +73,4 @@ function scrollWithEase(x, y, duration) {
   }, 15 );
 }
 
-export {scrollWithEase, currentPosition};
+export {smoothScroll, currentPosition};
