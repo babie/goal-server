@@ -3,13 +3,24 @@ import {Component} from 'flumpt';
 import _ from 'lodash';
 
 class ItemTreeComponent extends Component {
+  calculatePosition() {
+    const width = this.refs.current.offsetWidth;
+    const height = this.refs.current.offsetHeight;
+    const x = width * 1.5 + width * this.props.h;
+    const y = height * this.props.v;
+    return [x, y];
+  }
   componentDidMount() {
     if (this.props.id === this.props.self_and_desendant_ids[0]) {
-      const width = this.refs.current.offsetWidth;
-      const height = this.refs.current.offsetHeight;
-      const x = width * 1.5 + width * this.props.h;
-      const y = height * this.props.v;
-
+      const [x, y] = this.calculatePosition();
+      setTimeout(() => { 
+        this.dispatch("goal:scroll", x, y);
+      }, 1000);
+    }
+  }
+  componentDidUpdate() {
+    if (this.props.id === this.props.self_and_desendant_ids[0]) {
+      const [x, y] = this.calculatePosition();
       this.dispatch("goal:scroll", x, y);
     }
   }
