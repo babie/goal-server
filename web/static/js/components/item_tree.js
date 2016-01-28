@@ -1,6 +1,7 @@
 import React from 'react';
 import {Component} from 'flumpt';
 import _ from 'lodash';
+import {scrollWithEase, currentPosition} from '../utils.js';
 
 class ItemTreeComponent extends Component {
   calculatePosition() {
@@ -10,12 +11,35 @@ class ItemTreeComponent extends Component {
     const y = height * this.props.v;
     return [x, y];
   }
+  handleKeyDown(ev) {
+    const current = document.querySelector('section.current');
+    const width = current.offsetWidth;
+    const height = current.offsetHeight;
+    let [x, y] = currentPosition();
+    if (ev.keyCode === 74) { // j
+      y += height;
+      scrollWithEase(x, y, 400);
+    }
+    if (ev.keyCode === 75) { // k
+      y -= height;
+      scrollWithEase(x, y, 400);
+    }
+    if (ev.keyCode === 72) { // h
+      x -= width;
+      scrollWithEase(x, y, 400);
+    }
+    if (ev.keyCode === 76) { // l
+      x += width;
+      scrollWithEase(x, y, 400);
+    }
+  }
   componentDidMount() {
     if (this.props.id === this.props.self_and_ancestor_ids[0]) {
       const [x, y] = this.calculatePosition();
       setTimeout(() => { 
         this.dispatch("goal:scroll", x, y);
       }, 1000);
+      document.body.addEventListener('keydown', this.handleKeyDown);
     }
   }
   componentDidUpdate() {
@@ -23,6 +47,9 @@ class ItemTreeComponent extends Component {
       const [x, y] = this.calculatePosition();
       this.dispatch("goal:scroll", x, y);
     }
+  }
+  componentWillUnmount() {
+    document.body.removeEventListener('keydown', this.handleKeyDown);
   }
   render() {
     let descendants_tree = null;
