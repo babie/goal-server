@@ -12,7 +12,7 @@ defmodule GoalServer.ModelCase do
   of the test unless the test case is marked as async.
   """
 
-  use PowerAssert.CaseTemplate
+  use ExUnit.CaseTemplate
 
   using do
     quote do
@@ -20,6 +20,7 @@ defmodule GoalServer.ModelCase do
       import Ecto.Model
       import Ecto.Query, only: [from: 2]
       import GoalServer.ModelCase
+      use PowerAssert
     end
   end
 
