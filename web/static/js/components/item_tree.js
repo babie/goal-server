@@ -11,7 +11,7 @@ class ItemTreeComponent extends Component {
     return [x, y];
   }
   componentDidMount() {
-    if (this.props.id === this.props.self_and_desendant_ids[0]) {
+    if (this.props.id === this.props.self_and_ancestor_ids[0]) {
       const [x, y] = this.calculatePosition();
       setTimeout(() => { 
         this.dispatch("goal:scroll", x, y);
@@ -19,7 +19,7 @@ class ItemTreeComponent extends Component {
     }
   }
   componentDidUpdate() {
-    if (this.props.id === this.props.self_and_desendant_ids[0]) {
+    if (this.props.id === this.props.self_and_ancestor_ids[0]) {
       const [x, y] = this.calculatePosition();
       this.dispatch("goal:scroll", x, y);
     }
@@ -28,15 +28,15 @@ class ItemTreeComponent extends Component {
     let descendants_tree = null;
     if (this.props.children) {
       descendants_tree = this.props.children.map((c, i) => {
-        return <ItemTreeComponent key={c.id} {...c} self_and_desendant_ids={this.props.self_and_desendant_ids} h={this.props.h + 1} v={this.props.v + i} />;
+        return <ItemTreeComponent key={c.id} {...c} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={this.props.h + 1} v={this.props.v + i} />;
       });
     }
     let open = null;
-    if (_.some(this.props.self_and_desendant_ids, (v) => (v === this.props.id || v === this.props.parent_id))) {
+    if (_.some(this.props.self_and_ancestor_ids, (v) => (v === this.props.id || v === this.props.parent_id))) {
       open = "open";
     }
     let current = null;
-    if (this.props.id === this.props.self_and_desendant_ids[0]) {
+    if (this.props.id === this.props.self_and_ancestor_ids[0]) {
       current = "current";
     }
 
