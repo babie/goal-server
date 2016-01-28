@@ -56,6 +56,9 @@ main {
         min-width: $goal-width;
         max-width: $goal-width;
         height: $goal-height;
+        background-color: rgb(240, 240, 240);
+      }
+      section.current {
         background-color: rgb(255, 255, 255);
       }
     }
