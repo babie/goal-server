@@ -1,8 +1,6 @@
 import React from 'react';
 import {Component} from 'flumpt';
 import _ from 'lodash';
-import KeyStringDetector from 'key-string';
-import {smoothScroll, currentPosition} from '../utils.js';
 
 class ItemTreeComponent extends Component {
   calculatePosition() {
@@ -12,30 +10,9 @@ class ItemTreeComponent extends Component {
     const y = height * this.props.v;
     return [x, y];
   }
-  handleKeyDown(ev) {
-    const current = document.querySelector('section.current');
-    const width = current.offsetWidth;
-    const height = current.offsetHeight;
-    let [x, y] = currentPosition();
-    const detector = new KeyStringDetector();
-    switch (detector.detect(ev)) {
-      case 'J':
-        y += height;
-        smoothScroll(x, y, 400);
-        break;
-      case 'K':
-        y -= height;
-        smoothScroll(x, y, 400);
-        break;
-      case 'H':
-        x -= width;
-        smoothScroll(x, y, 400);
-        break;
-      case 'L':
-        x += width;
-        smoothScroll(x, y, 400);
-        break;
-    }
+  handleEvent(ev) {
+    console.dir(this);
+    this.dispatch("goal:keydown", ev);
   }
   componentDidMount() {
     if (this.props.id === this.props.self_and_ancestor_ids[0]) {
@@ -43,7 +20,7 @@ class ItemTreeComponent extends Component {
       setTimeout(() => { 
         this.dispatch("goal:scroll", x, y);
       }, 1000);
-      document.body.addEventListener('keydown', this.handleKeyDown);
+      document.body.addEventListener('keydown', this);
     }
   }
   componentDidUpdate() {
@@ -53,7 +30,7 @@ class ItemTreeComponent extends Component {
     }
   }
   componentWillUnmount() {
-    document.body.removeEventListener('keydown', this.handleKeyDown);
+    document.body.removeEventListener('keydown', this);
   }
   render() {
     let descendants_tree = null;
