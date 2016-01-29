@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "flumpt": "^0.1.4",
+    "key-string": "^0.1.0",
     "lodash": "^3.10.1",
     "page": "^1.6.4",
     "phoenix": "file:./deps/phoenix",

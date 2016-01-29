@@ -1,6 +1,7 @@
 import React from 'react';
 import {Component} from 'flumpt';
 import _ from 'lodash';
+import KeyStringDetector from 'key-string';
 import {smoothScroll, currentPosition} from '../utils.js';
 
 class ItemTreeComponent extends Component {
@@ -16,21 +17,24 @@ class ItemTreeComponent extends Component {
     const width = current.offsetWidth;
     const height = current.offsetHeight;
     let [x, y] = currentPosition();
-    if (ev.keyCode === 74) { // j
-      y += height;
-      smoothScroll(x, y, 400);
-    }
-    if (ev.keyCode === 75) { // k
-      y -= height;
-      smoothScroll(x, y, 400);
-    }
-    if (ev.keyCode === 72) { // h
-      x -= width;
-      smoothScroll(x, y, 400);
-    }
-    if (ev.keyCode === 76) { // l
-      x += width;
-      smoothScroll(x, y, 400);
+    const detector = new KeyStringDetector();
+    switch (detector.detect(ev)) {
+      case 'J':
+        y += height;
+        smoothScroll(x, y, 400);
+        break;
+      case 'K':
+        y -= height;
+        smoothScroll(x, y, 400);
+        break;
+      case 'H':
+        x -= width;
+        smoothScroll(x, y, 400);
+        break;
+      case 'L':
+        x += width;
+        smoothScroll(x, y, 400);
+        break;
     }
   }
   componentDidMount() {
