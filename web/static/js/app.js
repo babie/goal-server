@@ -22,6 +22,7 @@ import "phoenix_html"
 
 import ReactDOM from 'react-dom';
 import page from 'page';
+import TreeModel from 'tree-model';
 import GoalApp from './goal_app';
 
 
@@ -40,13 +41,9 @@ const app = new GoalApp({
 });
 
 page('/goals/:id', function(ctx, next) {
-  const state = {
-    id: parseInt(ctx.params.id),
-    // FIXME: temporary tangible data
-    self_and_ancestor_ids: [
-      8, 6, 1
-    ],
-    goal_tree: {
+  const tree = new TreeModel({childrenPropertyName: "descendants"});
+  const root = tree.parse(
+    {
       id: 1,
       title: "root",
       body: "some contents",
@@ -180,6 +177,14 @@ page('/goals/:id', function(ctx, next) {
         },
       ]
     }
+  );
+  const state = {
+    id: parseInt(ctx.params.id),
+    // FIXME: temporary tangible data
+    self_and_ancestor_ids: [
+      8, 6, 1
+    ],
+    root: root
   }
   app.update(initState => (state));
 });

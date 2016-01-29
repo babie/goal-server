@@ -12,14 +12,15 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "phoenix": "file:./deps/phoenix",
-    "phoenix_html": "file:./deps/phoenix_html",
     "flumpt": "^0.1.4",
     "lodash": "^3.10.1",
     "page": "^1.6.4",
+    "phoenix": "file:./deps/phoenix",
+    "phoenix_html": "file:./deps/phoenix_html",
     "react": "^0.14.6",
     "react-dom": "^0.14.6",
-    "sanitize.css": "^3.0.0"
+    "sanitize.css": "^3.0.0",
+    "tree-model": "^1.0.4"
   },
   "devDependencies": {
     "autoprefixer": "^6.2.3",

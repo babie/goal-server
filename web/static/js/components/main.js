@@ -7,7 +7,7 @@ class MainComponent extends Component {
     return (
       <main>
         <ul>
-          <ItemTreeComponent key={this.props.goal_tree.id} {...this.props.goal_tree} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={0} v={0} />
+          <ItemTreeComponent key={this.props.root.id} {...this.props.root.model} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={0} v={0} />
         </ul>
       </main>
     );
