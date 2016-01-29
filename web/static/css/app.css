@@ -34,7 +34,7 @@ $goal-height: 100px;
 #wrap {
   background-color: rgb(228, 228, 228);
   width: calc(200vw - ($goal-width * 2));
-  height: calc(200vh - ($goal-height * 2));
+  height: 200vh; /* dynamic value */
   padding-top: $goal-height;
   padding-bottom: $goal-height;
   padding-left: calc(50vw - ($goal-width / 2));
