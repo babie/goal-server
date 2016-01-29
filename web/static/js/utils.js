@@ -6,9 +6,9 @@ function currentPosition() {
 
 function smoothScroll(x, y, duration) {
   const step = Math.PI / (duration / 15);
-  const [width, height] = currentPosition();
-  const cosXParameter = width / 2;
-  const cosYParameter = height / 2;
+  const [prevX, prevY] = currentPosition();
+  const cosXParameter = Math.abs(x - prevX) / 2;
+  const cosYParameter = Math.abs(y - prevY) / 2;
   var xCount = 0;
   var yCount = 0;
   var xMargin;
@@ -19,12 +19,19 @@ function smoothScroll(x, y, duration) {
     if (currentY != y) {
       yCount = yCount + 1;
       yMargin = cosYParameter - cosYParameter * Math.cos(yCount * step);
-      if (yMargin < 1.0) {
+      let nextY;
+      if (prevY < y) {
+        nextY = prevY + yMargin;
+      }
+      else {
+        nextY = prevY - yMargin;
+      }
+      if ((y - 1) <= nextY && nextY <= (y + 1)) {
         window.scrollTo(currentX, y);
         clearInterval(scrollYInterval);
       }
       else {
-        window.scrollTo(currentX, (y + height - yMargin));
+        window.scrollTo(currentX, nextY);
       }
     }
     else {
@@ -37,12 +44,19 @@ function smoothScroll(x, y, duration) {
     if (currentX != x) {
       xCount = xCount + 1;
       xMargin = cosXParameter - cosXParameter * Math.cos(xCount * step);
-      if (xMargin < 1.0) {
+      let nextX;
+      if (prevX < x) {
+        nextX = prevX + xMargin;
+      }
+      else {
+        nextX = prevX - xMargin;
+      }
+      if ((x - 1) <= nextX && nextX <= (x + 1)) {
         window.scrollTo(x, currentY);
         clearInterval(scrollXInterval);
       }
       else {
-        window.scrollTo((x + width - xMargin), currentY);
+        window.scrollTo(nextX, currentY);
       }
     } 
     else {

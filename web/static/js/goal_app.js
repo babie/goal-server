@@ -18,19 +18,19 @@ class GoalApp extends Flux {
       switch (detector.detect(ev)) {
         case 'J':
           y += height;
-          smoothScroll(x, y, 400);
+          smoothScroll(x, y, 100);
           break;
         case 'K':
           y -= height;
-          smoothScroll(x, y, 400);
+          smoothScroll(x, y, 100);
           break;
         case 'H':
           x -= width;
-          smoothScroll(x, y, 400);
+          smoothScroll(x, y, 200);
           break;
         case 'L':
           x += width;
-          smoothScroll(x, y, 400);
+          smoothScroll(x, y, 200);
           break;
       }
     })
