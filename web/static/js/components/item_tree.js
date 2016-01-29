@@ -10,28 +10,23 @@ class ItemTreeComponent extends Component {
     const y = height * this.props.v;
     return [x, y];
   }
-  handleEvent(ev) {
-    console.dir(this);
-    this.dispatch("goal:keydown", ev);
-  }
+
   componentDidMount() {
     if (this.props.id === this.props.self_and_ancestor_ids[0]) {
       const [x, y] = this.calculatePosition();
       setTimeout(() => { 
         this.dispatch("goal:scroll", x, y);
       }, 1000);
-      document.body.addEventListener('keydown', this);
     }
   }
+
   componentDidUpdate() {
     if (this.props.id === this.props.self_and_ancestor_ids[0]) {
       const [x, y] = this.calculatePosition();
       this.dispatch("goal:scroll", x, y);
     }
   }
-  componentWillUnmount() {
-    document.body.removeEventListener('keydown', this);
-  }
+
   render() {
     let descendants_tree = null;
     if (this.props.descendants) {
