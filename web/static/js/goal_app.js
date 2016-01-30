@@ -33,7 +33,7 @@ class GoalApp extends Flux {
           });
           if (sibling) {
             self_and_ancestor_ids = [sibling.model.id].concat(_.tail(self_and_ancestor_ids));
-            const state = _.merge(this.state, {self_and_ancestor_ids: self_and_ancestor_ids});
+            const state = _.set(this.state, "self_and_ancestor_ids", self_and_ancestor_ids);
             this.update((s) => {
               return state;
             });
@@ -48,15 +48,20 @@ class GoalApp extends Flux {
           });
           if (sibling) {
             self_and_ancestor_ids = [sibling.model.id].concat(_.tail(self_and_ancestor_ids));
-            const state = _.merge(this.state, {self_and_ancestor_ids: self_and_ancestor_ids});
+            const state = _.set(this.state, "self_and_ancestor_ids", self_and_ancestor_ids);
             this.update((s) => {
               return state;
             });
           }
           break;
         case 'H':
-          x -= width;
-          smoothScroll(x, y, 200);
+          if (self_and_ancestor_ids.length >= 2) {
+            self_and_ancestor_ids = _.drop(self_and_ancestor_ids, 1);
+            const state = _.set(this.state, "self_and_ancestor_ids", self_and_ancestor_ids);
+            this.update((s) => {
+              return state;
+            });
+          }
           break;
         case 'L':
           x += width;

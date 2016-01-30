@@ -99,7 +99,7 @@ page('/goals/:id', function(ctx, next) {
           body: "some contents",
           status: "todo",
           parent_id: 1,
-          position: 0,
+          position: 1,
           owned_by: 1,
           descendants: [
             {
@@ -140,7 +140,7 @@ page('/goals/:id', function(ctx, next) {
           body: "some contents",
           status: "todo",
           parent_id: 1,
-          position: 0,
+          position: 2,
           owned_by: 1,
           descendants: [
             {
