@@ -64,12 +64,7 @@ class GoalApp extends Flux {
           }
           break;
         case 'L':
-          const first_child = root.first((node) => {
-            return (
-              node.model.parent_id === current.model.id &&
-              node.model.position === 0
-            );
-          });
+          const first_child = current.children[0];
           if (first_child) {
             self_and_ancestor_ids = [first_child.model.id].concat(self_and_ancestor_ids);
             const state = _.set(this.state, "self_and_ancestor_ids", self_and_ancestor_ids);
