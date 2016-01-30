@@ -11,10 +11,6 @@ class GoalApp extends Flux {
       smoothScroll(x, y, 100);
     });
     this.on("goal:keydown", (ev) => {
-      const currentDOM = document.querySelector('section.current');
-      const width = currentDOM.offsetWidth;
-      const height = currentDOM.offsetHeight;
-      let [x, y] = currentPosition();
       let self_and_ancestor_ids = this.state.self_and_ancestor_ids;
       const root = this.state.root;
       const current = root.first((node) => {
