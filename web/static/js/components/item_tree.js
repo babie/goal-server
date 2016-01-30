@@ -38,14 +38,14 @@ class ItemTreeComponent extends Component {
     if (_.some(this.props.self_and_ancestor_ids, (v) => (v === this.props.id || v === this.props.parent_id))) {
       open = "open";
     }
-    let current = null;
+    let currentClass = null;
     if (this.props.id === this.props.self_and_ancestor_ids[0]) {
-      current = "current";
+      currentClass = "current";
     }
 
     return (
       <li className={open}>
-        <section className={current} ref="current">
+        <section className={currentClass} ref="current">
           {this.props.title}
         </section>
         <ul>
