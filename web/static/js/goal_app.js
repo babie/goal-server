@@ -20,10 +20,12 @@ class GoalApp extends Flux {
       const current = root.first((node) => {
         return node.model.id === _.first(this.state.self_and_ancestor_ids)
       });
+      let sibling = null;
+
       const detector = new KeyStringDetector();
       switch (detector.detect(ev)) {
         case 'J':
-          const sibling = root.first((node) => {
+          sibling = root.first((node) => {
             return (
               node.model.parent_id === current.model.parent_id &&
               node.model.position === current.model.position + 1
@@ -38,8 +40,19 @@ class GoalApp extends Flux {
           }
           break;
         case 'K':
-          y -= height;
-          smoothScroll(x, y, 100);
+          sibling = root.first((node) => {
+            return (
+              node.model.parent_id === current.model.parent_id &&
+              node.model.position === current.model.position - 1
+            );
+          });
+          if (sibling) {
+            self_and_ancestor_ids = [sibling.model.id].concat(_.tail(self_and_ancestor_ids));
+            const state = _.merge(this.state, {self_and_ancestor_ids: self_and_ancestor_ids});
+            this.update((s) => {
+              return state;
+            });
+          }
           break;
         case 'H':
           x -= width;
