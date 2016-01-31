@@ -6,8 +6,8 @@ class ItemTreeComponent extends Component {
   calculatePosition() {
     const width = this.refs.current.offsetWidth;
     const height = this.refs.current.offsetHeight;
-    const x = width * 1.5 + width * this.props.h;
-    const y = height * 1.5 + height * this.props.v;
+    const x = width * this.props.h;
+    const y = height * this.props.v;
     return [x, y];
   }
 
