@@ -51,7 +51,7 @@ class ItemTreeComponent extends Component {
 
     return (
       <li className={openClass}>
-        <section className={currentClass} tabIndex={0} onFocus={this.handleFocus.bind(this)} onClick={this.handleFocus.bind(this)} ref="current">
+        <section className={currentClass} tabIndex="0" onFocus={this.handleFocus.bind(this)} onClick={this.handleFocus.bind(this)} ref="current">
           {this.props.node.model.title}
         </section>
         <ul>
