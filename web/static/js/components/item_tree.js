@@ -34,9 +34,9 @@ class ItemTreeComponent extends Component {
         return <ItemTreeComponent key={c.id} {...c} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={this.props.h + 1} v={this.props.v + i} />;
       });
     }
-    let open = null;
+    let openClass = null;
     if (_.some(this.props.self_and_ancestor_ids, (v) => (v === this.props.id || v === this.props.parent_id))) {
-      open = "open";
+      openClass = "open";
     }
     let currentClass = null;
     if (this.props.id === this.props.self_and_ancestor_ids[0]) {
@@ -44,7 +44,7 @@ class ItemTreeComponent extends Component {
     }
 
     return (
-      <li className={open}>
+      <li className={openClass}>
         <section className={currentClass} ref="current">
           {this.props.title}
         </section>
