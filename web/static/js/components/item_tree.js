@@ -11,6 +11,10 @@ class ItemTreeComponent extends Component {
     return [x, y];
   }
 
+  handleFocus(event) {
+    this.dispatch("goal:focus", this.props.id);
+  }
+
   componentDidMount() {
     if (this.props.id === this.props.self_and_ancestor_ids[0]) {
       const [x, y] = this.calculatePosition();
@@ -45,7 +49,7 @@ class ItemTreeComponent extends Component {
 
     return (
       <li className={openClass}>
-        <section className={currentClass} ref="current">
+        <section className={currentClass} tabIndex={0} onFocus={this.handleFocus.bind(this)} onClick={this.handleFocus.bind(this)} ref="current">
           {this.props.title}
         </section>
         <ul>
