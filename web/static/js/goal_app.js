@@ -7,13 +7,8 @@ import {smoothScroll, currentPosition} from './utils.js';
 
 class GoalApp extends Flux {
   subscribe() {
-    this.on("goal:scroll", (x, y) => {
-      console.log(x, y);
-      window.scrollTo(x, y);
-      //smoothScroll(x, y, 100);
-    });
 
-    this.on("goal:focus", (id) => {
+    this.on("goal:focus", (id, x, y) => {
       let self_and_ancestor_ids;
       const root = this.state.root;
       const focused = root.first((node) => {
@@ -25,6 +20,7 @@ class GoalApp extends Flux {
         this.update((s) => {
           return state;
         });
+        window.scrollTo(x, y);
       }
     });
 

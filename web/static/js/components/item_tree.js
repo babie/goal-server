@@ -12,23 +12,20 @@ class ItemTreeComponent extends Component {
   }
 
   handleFocus(event) {
-    this.dispatch("goal:focus", this.props.node.model.id);
+    const [x, y] = this.calculatePosition();
+    this.dispatch("goal:focus", this.props.node.model.id, x, y);
   }
 
   componentDidMount() {
     if (this.props.node.model.id === this.props.self_and_ancestor_ids[0]) {
-      const [x, y] = this.calculatePosition();
       setTimeout(() => { 
-        this.dispatch("goal:scroll", x, y);
+        this.refs.current.focus();
       }, 1000);
-      this.refs.current.focus();
     }
   }
 
   componentDidUpdate() {
     if (this.props.node.model.id === this.props.self_and_ancestor_ids[0]) {
-      const [x, y] = this.calculatePosition();
-      this.dispatch("goal:scroll", x, y);
       this.refs.current.focus();
     }
   }
