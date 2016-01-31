@@ -51,7 +51,8 @@ main {
       display: flex;
       flex-direction: row;
       width: $goal-width;
-      height: $goal-height;
+      min-height: $goal-height;
+      max-height: $goal-height;
       section {
         min-width: $goal-width;
         max-width: $goal-width;
