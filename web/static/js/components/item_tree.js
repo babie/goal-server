@@ -21,6 +21,7 @@ class ItemTreeComponent extends Component {
       setTimeout(() => { 
         this.dispatch("goal:scroll", x, y);
       }, 1000);
+      this.refs.current.focus();
     }
   }
 
@@ -28,6 +29,7 @@ class ItemTreeComponent extends Component {
     if (this.props.id === this.props.self_and_ancestor_ids[0]) {
       const [x, y] = this.calculatePosition();
       this.dispatch("goal:scroll", x, y);
+      this.refs.current.focus();
     }
   }
 
