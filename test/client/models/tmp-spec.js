@@ -20,7 +20,7 @@ describe("Person", ()=>{
     assert(alice.name === "alice")
   })
   // failed
-  it("#mistake", ()=>{
-    assert(alice.name === bob.name)
+  it("fix #mistake", ()=>{
+    assert(alice.name !== bob.name)
   })
 })
