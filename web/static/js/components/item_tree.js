@@ -4,6 +4,14 @@ import _ from 'lodash';
 import KeyStringDetector from 'key-string';
 
 class ItemTreeComponent extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      newing: false,
+      newTitle: "",
+    };
+  }
+
   calculatePosition() {
     const width = this.refs.current.offsetWidth;
     const height = this.refs.current.offsetHeight;
@@ -53,6 +61,43 @@ class ItemTreeComponent extends Component {
           self_and_ancestor_ids = [first_child.model.id].concat(self_and_ancestor_ids);
           this.dispatch("self_and_ancestor_ids:update", self_and_ancestor_ids);
         }
+        else {
+          this.setState({newing: true});
+        }
+        break;
+    }
+  }
+
+  handleNewTitleBlur(event) {
+    // TODO: think case of body... editing
+    if (this.state.newing) {
+      this.setState({newing: false, newTitle: ""});
+    }
+  }
+
+  handleNewTitleChange(event) {
+    if (this.state.newing) {
+      this.setState({newTitle: event.target.value});
+    }
+  }
+
+  handleNewTitleKeyDown(event) {
+    const detector = new KeyStringDetector();
+    switch (detector.detect(event)) {
+      case 'Esc':
+        this.setState({newing: false, newTitle: ""});
+        break;
+      case 'Return':
+        const newGoal = this.props.tree.parse({
+          title: event.target.value.trim(),
+          body: "",
+          parent_id: this.props.node.model.id
+        });
+        console.log(newGoal);
+        // this.dispatch("goal:create", newGoal);
+        this.setState({newing: false, newTitle: ""});
+        break;
+      default:
         break;
     }
   }
@@ -65,8 +110,12 @@ class ItemTreeComponent extends Component {
     }
   }
 
-  componentDidUpdate() {
-    if (this.props.node.model.id === this.props.self_and_ancestor_ids[0]) {
+  componentDidUpdate(prevProps) {
+    if (!prevProps.newing && this.state.newing) {
+      const input = this.refs.newTitleField;
+      input.focus();
+    }
+    else if (this.props.node.model.id === this.props.self_and_ancestor_ids[0]) {
       if (document.activeElement != this.refs.current) {
         this.refs.current.focus();
       }
@@ -77,7 +126,7 @@ class ItemTreeComponent extends Component {
     let descendants_tree = null;
     if (!_.isEmpty(this.props.node.children)) {
       descendants_tree = this.props.node.children.map((n, i) => {
-        return <ItemTreeComponent key={n.model.id} root={this.props.root} node={n} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={this.props.h + 1} v={this.props.v + i} />;
+        return <ItemTreeComponent key={n.model.id} tree={this.props.tree} root={this.props.root} node={n} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={this.props.h + 1} v={this.props.v + i} />;
       });
     }
     let openClass = null;
@@ -88,6 +137,23 @@ class ItemTreeComponent extends Component {
     if (this.props.node.model.id === this.props.self_and_ancestor_ids[0]) {
       currentClass = "current";
     }
+    let newItem = null;
+    if (this.state.newing) {
+      newItem = (
+        <li className="open">
+          <section tabIndex="0">
+            <input
+              ref="newTitleField"
+              className="new"
+              value={this.state.newTitle}
+              onBlur={this.handleNewTitleBlur.bind(this)}
+              onChange={this.handleNewTitleChange.bind(this)}
+              onKeyDown={this.handleNewTitleKeyDown.bind(this)}
+            />
+          </section>
+        </li>
+      );
+    }
 
     return (
       <li className={openClass}>
@@ -95,6 +161,7 @@ class ItemTreeComponent extends Component {
           {this.props.node.model.title}
         </section>
         <ul>
+          {newItem}
           {descendants_tree}
         </ul>
       </li>

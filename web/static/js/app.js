@@ -183,6 +183,7 @@ page('/goals/:id', function(ctx, next) {
     self_and_ancestor_ids: [
       8, 6, 1
     ],
+    tree: tree,
     root: root
   }
   app.update(initState => (state));
