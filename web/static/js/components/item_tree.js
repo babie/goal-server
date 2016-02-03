@@ -1,6 +1,7 @@
 import React from 'react';
 import {Component} from 'flumpt';
 import _ from 'lodash';
+import KeyStringDetector from 'key-string';
 
 class ItemTreeComponent extends Component {
   calculatePosition() {
@@ -17,7 +18,53 @@ class ItemTreeComponent extends Component {
   }
 
   handleKeyDown(event) {
-    this.dispatch("goal:keydown", event);
+    let self_and_ancestor_ids = this.props.self_and_ancestor_ids;
+    const root = this.props.root;
+    const current = root.first((node) => {
+      return node.model.id === _.first(this.props.self_and_ancestor_ids)
+    });
+    let sibling = null;
+
+    const detector = new KeyStringDetector();
+    switch (detector.detect(event)) {
+      case 'J':
+        sibling = root.first((node) => {
+          return (
+            node.model.parent_id === current.model.parent_id &&
+            node.model.position === current.model.position + 1
+          );
+        });
+        if (sibling) {
+          self_and_ancestor_ids = [sibling.model.id].concat(_.tail(self_and_ancestor_ids));
+          this.dispatch("self_and_ancestor_ids:update", self_and_ancestor_ids);
+        }
+        break;
+      case 'K':
+        sibling = root.first((node) => {
+          return (
+            node.model.parent_id === current.model.parent_id &&
+            node.model.position === current.model.position - 1
+          );
+        });
+        if (sibling) {
+          self_and_ancestor_ids = [sibling.model.id].concat(_.tail(self_and_ancestor_ids));
+          this.dispatch("self_and_ancestor_ids:update", self_and_ancestor_ids);
+        }
+        break;
+      case 'H':
+        if (self_and_ancestor_ids.length >= 2) {
+          self_and_ancestor_ids = _.drop(self_and_ancestor_ids, 1);
+          this.dispatch("self_and_ancestor_ids:update", self_and_ancestor_ids);
+        }
+        break;
+      case 'L':
+        const first_child = current.children[0];
+        if (first_child) {
+          self_and_ancestor_ids = [first_child.model.id].concat(self_and_ancestor_ids);
+          this.dispatch("self_and_ancestor_ids:update", self_and_ancestor_ids);
+        }
+        break;
+    }
   }
 
   componentDidMount() {
@@ -30,7 +77,9 @@ class ItemTreeComponent extends Component {
 
   componentDidUpdate() {
     if (this.props.node.model.id === this.props.self_and_ancestor_ids[0]) {
-      this.refs.current.focus();
+      if (document.activeElement != this.refs.current) {
+        this.refs.current.focus();
+      }
     }
   }
 
@@ -38,7 +87,7 @@ class ItemTreeComponent extends Component {
     let descendants_tree = null;
     if (!_.isEmpty(this.props.node.children)) {
       descendants_tree = this.props.node.children.map((n, i) => {
-        return <ItemTreeComponent key={n.model.id} node={n} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={this.props.h + 1} v={this.props.v + i} />;
+        return <ItemTreeComponent key={n.model.id} root={this.props.root} node={n} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={this.props.h + 1} v={this.props.v + i} />;
       });
     }
     let openClass = null;
