@@ -2,7 +2,6 @@ import React from 'react';
 import {Flux} from 'flumpt';
 import _ from 'lodash';
 import GoalAppComponent from './components/goal_app';
-import {smoothScroll, currentPosition} from './utils.js';
 
 class GoalApp extends Flux {
   subscribe() {
