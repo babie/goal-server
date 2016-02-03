@@ -16,6 +16,10 @@ class ItemTreeComponent extends Component {
     this.dispatch("goal:focus", this.props.node.model.id, x, y);
   }
 
+  handleKeyDown(event) {
+    this.dispatch("goal:keydown", event);
+  }
+
   componentDidMount() {
     if (this.props.node.model.id === this.props.self_and_ancestor_ids[0]) {
       setTimeout(() => { 
@@ -48,7 +52,7 @@ class ItemTreeComponent extends Component {
 
     return (
       <li className={openClass}>
-        <section className={currentClass} tabIndex="0" onFocus={this.handleFocus.bind(this)} onClick={this.handleFocus.bind(this)} ref="current">
+        <section className={currentClass} tabIndex="0" onFocus={this.handleFocus.bind(this)} onClick={this.handleFocus.bind(this)} onKeyDown={this.handleKeyDown.bind(this)} ref="current">
           {this.props.node.model.title}
         </section>
         <ul>

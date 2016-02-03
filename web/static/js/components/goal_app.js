@@ -5,18 +5,6 @@ import UserNavComponent from './user_nav.js';
 import MainComponent from './main.js';
 
 class GoalAppComponent extends Component {
-  handleEvent(event) {
-    this.dispatch("goal:keydown", event);
-  }
-
-  componentDidMount() {
-    document.body.addEventListener('keydown', this);
-  }
-
-  componentWillUnmount() {
-    document.body.removeEventListener('keydown', this);
-  }
-
   render() {
     return (
       <div id="wrap">
