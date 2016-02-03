@@ -28,32 +28,22 @@ class ItemTreeComponent extends Component {
     const detector = new KeyStringDetector();
     switch (detector.detect(event)) {
       case 'J':
-        sibling = root.first((node) => {
-          return (
-            node.model.parent_id === current.model.parent_id &&
-            node.model.position === current.model.position + 1
-          );
-        });
-        if (sibling) {
+        sibling = current.parent.children[current.model.position + 1];
+          if (sibling) {
           self_and_ancestor_ids = [sibling.model.id].concat(_.tail(self_and_ancestor_ids));
           this.dispatch("self_and_ancestor_ids:update", self_and_ancestor_ids);
         }
         break;
       case 'K':
-        sibling = root.first((node) => {
-          return (
-            node.model.parent_id === current.model.parent_id &&
-            node.model.position === current.model.position - 1
-          );
-        });
-        if (sibling) {
+        sibling = current.parent.children[current.model.position - 1];
+          if (sibling) {
           self_and_ancestor_ids = [sibling.model.id].concat(_.tail(self_and_ancestor_ids));
           this.dispatch("self_and_ancestor_ids:update", self_and_ancestor_ids);
         }
         break;
       case 'H':
-        if (self_and_ancestor_ids.length >= 2) {
-          self_and_ancestor_ids = _.drop(self_and_ancestor_ids, 1);
+        if (self_and_ancestor_ids.length > 1) {
+          self_and_ancestor_ids = _.drop(self_and_ancestor_ids);
           this.dispatch("self_and_ancestor_ids:update", self_and_ancestor_ids);
         }
         break;
