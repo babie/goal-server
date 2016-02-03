@@ -20,14 +20,12 @@ class ItemTreeComponent extends Component {
     return [x, y];
   }
 
-  handleClick(event) {
-    const [x, y] = this.calculatePosition();
-    this.dispatch("self_and_ancestor_ids:update", this.props.node, x, y);
-  }
-
   handleFocus(event) {
     const [x, y] = this.calculatePosition();
-    this.dispatch("goal:scroll", x, y);
+    window.scrollTo(x, y);
+    if (this.props.node.model.id !== this.props.self_and_ancestor_ids[0]) {
+      this.dispatch("self_and_ancestor_ids:update", this.props.node);
+    }
   }
 
   handleKeyDown(event) {
@@ -156,7 +154,7 @@ class ItemTreeComponent extends Component {
 
     return (
       <li className={openClass}>
-        <section className={currentClass} tabIndex="0" onFocus={this.handleFocus.bind(this)} onClick={this.handleClick.bind(this)} onKeyDown={this.handleKeyDown.bind(this)} ref="current">
+        <section className={currentClass} tabIndex="0" onFocus={this.handleFocus.bind(this)} onClick={this.handleFocus.bind(this)} onKeyDown={this.handleKeyDown.bind(this)} ref="current">
           {this.props.node.model.title}
         </section>
         <ul>

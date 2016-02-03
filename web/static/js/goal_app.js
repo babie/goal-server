@@ -6,10 +6,6 @@ import {smoothScroll, currentPosition} from './utils.js';
 
 class GoalApp extends Flux {
   subscribe() {
-    this.on("goal:scroll", (x, y) => {
-      window.scrollTo(x, y);
-    });
-
     this.on("self_and_ancestor_ids:update", (node) => {
       const self_and_ancestor_ids = node.getPath().map((n) => (n.model.id)).reverse();
       const state = _.set(this.state, "self_and_ancestor_ids", self_and_ancestor_ids);
