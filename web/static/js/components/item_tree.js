@@ -20,44 +20,47 @@ class ItemTreeComponent extends Component {
     return [x, y];
   }
 
+  handleClick(event) {
+    const [x, y] = this.calculatePosition();
+    this.dispatch("self_and_ancestor_ids:update", this.props.node, x, y);
+  }
+
   handleFocus(event) {
     const [x, y] = this.calculatePosition();
-    this.dispatch("goal:focus", this.props.node.model.id, x, y);
+    this.dispatch("goal:scroll", x, y);
   }
 
   handleKeyDown(event) {
-    let self_and_ancestor_ids = this.props.self_and_ancestor_ids;
-    const root = this.props.root;
     const current = this.props.node;
     let sibling = null;
 
     const detector = new KeyStringDetector();
     switch (detector.detect(event)) {
       case 'J':
-        sibling = current.parent.children[current.model.position + 1];
+        if (current.parent) {
+          sibling = current.parent.children[current.model.position + 1];
           if (sibling) {
-          self_and_ancestor_ids = [sibling.model.id].concat(_.tail(self_and_ancestor_ids));
-          this.dispatch("self_and_ancestor_ids:update", self_and_ancestor_ids);
+            this.dispatch("self_and_ancestor_ids:update", sibling);
+          }
         }
         break;
       case 'K':
-        sibling = current.parent.children[current.model.position - 1];
+        if (current.parent) {
+          sibling = current.parent.children[current.model.position - 1];
           if (sibling) {
-          self_and_ancestor_ids = [sibling.model.id].concat(_.tail(self_and_ancestor_ids));
-          this.dispatch("self_and_ancestor_ids:update", self_and_ancestor_ids);
+            this.dispatch("self_and_ancestor_ids:update", sibling);
+          }
         }
         break;
       case 'H':
-        if (self_and_ancestor_ids.length > 1) {
-          self_and_ancestor_ids = _.drop(self_and_ancestor_ids);
-          this.dispatch("self_and_ancestor_ids:update", self_and_ancestor_ids);
+        if (current.parent) {
+          this.dispatch("self_and_ancestor_ids:update", current.parent);
         }
         break;
       case 'L':
-        const first_child = current.children[0];
-        if (first_child) {
-          self_and_ancestor_ids = [first_child.model.id].concat(self_and_ancestor_ids);
-          this.dispatch("self_and_ancestor_ids:update", self_and_ancestor_ids);
+        const child = current.children[0];
+        if (child) {
+          this.dispatch("self_and_ancestor_ids:update", child);
         }
         else {
           this.setState({newing: true});
@@ -114,9 +117,7 @@ class ItemTreeComponent extends Component {
       input.focus();
     }
     else if (this.props.node.model.id === this.props.self_and_ancestor_ids[0]) {
-      if (document.activeElement != this.refs.current) {
-        this.refs.current.focus();
-      }
+      this.refs.current.focus();
     }
   }
 
@@ -155,7 +156,7 @@ class ItemTreeComponent extends Component {
 
     return (
       <li className={openClass}>
-        <section className={currentClass} tabIndex="0" onFocus={this.handleFocus.bind(this)} onClick={this.handleFocus.bind(this)} onKeyDown={this.handleKeyDown.bind(this)} ref="current">
+        <section className={currentClass} tabIndex="0" onFocus={this.handleFocus.bind(this)} onClick={this.handleClick.bind(this)} onKeyDown={this.handleKeyDown.bind(this)} ref="current">
           {this.props.node.model.title}
         </section>
         <ul>
