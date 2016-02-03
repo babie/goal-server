@@ -28,9 +28,7 @@ class ItemTreeComponent extends Component {
   handleKeyDown(event) {
     let self_and_ancestor_ids = this.props.self_and_ancestor_ids;
     const root = this.props.root;
-    const current = root.first((node) => {
-      return node.model.id === _.first(this.props.self_and_ancestor_ids)
-    });
+    const current = this.props.node;
     let sibling = null;
 
     const detector = new KeyStringDetector();
