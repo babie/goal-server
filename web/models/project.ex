@@ -3,6 +3,8 @@ defmodule GoalServer.Project do
 
   schema "projects" do
     field :name, :string
+    has_many :memberships, GoalServer.Membership
+    has_many :members, through: [:memberships, :user]
 
     timestamps
   end
