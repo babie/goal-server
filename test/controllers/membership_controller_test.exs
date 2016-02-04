@@ -1,12 +1,15 @@
 defmodule GoalServer.MembershipControllerTest do
   use GoalServer.ConnCase
+  import GoalServer.Fixtures
 
   alias GoalServer.Membership
   @valid_attrs %{status: "some content"}
   @invalid_attrs %{}
 
   setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+    project = fixture(:project)
+    user = fixture(:user)
+    {:ok, conn: put_req_header(conn, "accept", "application/json"), project: project, user: user}
   end
 
   test "lists all entries on index", %{conn: conn} do
@@ -29,8 +32,9 @@ defmodule GoalServer.MembershipControllerTest do
     end
   end
 
-  test "creates and renders resource when data is valid", %{conn: conn} do
-    conn = post conn, membership_path(conn, :create), membership: @valid_attrs
+  test "creates and renders resource when data is valid", %{conn: conn, project: project, user: user} do
+    attrs = Map.merge(@valid_attrs, %{project_id: project.id, user_id: user.id})
+    conn = post conn, membership_path(conn, :create), membership: attrs
     assert json_response(conn, 201)["data"]["id"]
     assert Repo.get_by(Membership, @valid_attrs)
   end
@@ -40,9 +44,10 @@ defmodule GoalServer.MembershipControllerTest do
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-  test "updates and renders chosen resource when data is valid", %{conn: conn} do
+  test "updates and renders chosen resource when data is valid", %{conn: conn, project: project, user: user} do
     membership = Repo.insert! %Membership{}
-    conn = put conn, membership_path(conn, :update, membership), membership: @valid_attrs
+    attrs = Map.merge(@valid_attrs, %{project_id: project.id, user_id: user.id})
+    conn = put conn, membership_path(conn, :update, membership), membership: attrs
     assert json_response(conn, 200)["data"]["id"]
     assert Repo.get_by(Membership, @valid_attrs)
   end

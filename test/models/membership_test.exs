@@ -3,7 +3,7 @@ defmodule GoalServer.MembershipTest do
 
   alias GoalServer.Membership
 
-  @valid_attrs %{status: "some content"}
+  @valid_attrs %{project_id: 42, user_id: 42, status: "some content"}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do

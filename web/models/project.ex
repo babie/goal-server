@@ -5,6 +5,7 @@ defmodule GoalServer.Project do
     field :name, :string
     has_many :memberships, GoalServer.Membership
     has_many :members, through: [:memberships, :user]
+    has_many :goals, GoalServer.Goal, foreign_key: :project_id, on_delete: :delete_all
 
     timestamps
   end

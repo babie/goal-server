@@ -9,16 +9,16 @@ defmodule GoalServer.GoalControllerTest do
     status: "todo",
     position: 0,
     parent_id: nil,
-    owned_by: 42,
+    project_id: 42,
   }
-  @invalid_attrs %{title: "", owned_by: -1}
+  @invalid_attrs %{title: "", project_id: -1}
 
   setup %{conn: conn} do
-    user = fixture(:user)
-    root = fixture(:root, user: user)
+    project = fixture(:project)
+    root = fixture(:root, project: project)
     children = fixture(:children, parent: root)
     |> Enum.map(&(Repo.preload(&1, :parent)))
-    {:ok, conn: put_req_header(conn, "accept", "application/json"), user: user, root: root, children: children}
+    {:ok, conn: put_req_header(conn, "accept", "application/json"), project: project, root: root, children: children}
   end
 
   test "lists all entries on index", %{conn: conn, root: root} do
@@ -36,7 +36,7 @@ defmodule GoalServer.GoalControllerTest do
       "status" => root.status,
       "parent_id" => root.parent_id,
       "position" => root.position,
-      "owned_by" => root.owned_by,
+      "project_id" => root.project_id,
     }
   end
 
@@ -46,8 +46,8 @@ defmodule GoalServer.GoalControllerTest do
     end
   end
 
-  test "creates and renders resource when data is valid", %{conn: conn, user: user, root: root, children: children} do
-    attrs = Map.merge(@valid_attrs, %{parent_id: root.id, position: 1, owned_by: user.id})
+  test "creates and renders resource when data is valid", %{conn: conn, project: project, root: root, children: children} do
+    attrs = Map.merge(@valid_attrs, %{parent_id: root.id, position: 1, project_id: project.id})
     conn = post conn, goal_path(conn, :create), goal: attrs
 
     id = json_response(conn, 201)["data"]["id"]
@@ -68,7 +68,7 @@ defmodule GoalServer.GoalControllerTest do
   end
 
   test "updates and renders chosen resource when data is valid", %{conn: conn, children: [_, c2, _]} do
-    attrs = %{title: "bar", body: "hoge", status: "doing", parent_id: c2.id, position: c2.position, owned_by: c2.owned_by}
+    attrs = %{title: "bar", body: "hoge", status: "doing", parent_id: c2.id, position: c2.position, project_id: c2.project_id}
     conn = put conn, goal_path(conn, :update, c2), goal: attrs
 
     id = json_response(conn, 200)["data"]["id"]
@@ -78,8 +78,8 @@ defmodule GoalServer.GoalControllerTest do
     assert goal
   end
 
-  test "does not update chosen resource and renders errors when data is root", %{conn: conn, user: user, root: root} do
-    attrs = Map.merge(@valid_attrs, %{body: "hoge", owned_by: user.id})
+  test "does not update chosen resource and renders errors when data is root", %{conn: conn, project: project, root: root} do
+    attrs = Map.merge(@valid_attrs, %{body: "hoge", project_id: project.id})
     conn = put conn, goal_path(conn, :update, root), goal: attrs
 
     assert json_response(conn, 422)["errors"] != %{}
@@ -129,7 +129,7 @@ defmodule GoalServer.GoalControllerTest do
       "status" => parent.status,
       "parent_id" => parent.parent_id,
       "position" => parent.position,
-      "owned_by" => parent.owned_by,
+      "project_id" => parent.project_id,
     }
   end
 

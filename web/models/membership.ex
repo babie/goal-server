@@ -9,7 +9,7 @@ defmodule GoalServer.Membership do
     timestamps
   end
 
-  @required_fields ~w(status)
+  @required_fields ~w(project_id user_id status)
   @optional_fields ~w()
 
   @doc """

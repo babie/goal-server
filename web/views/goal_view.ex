@@ -17,7 +17,7 @@ defmodule GoalServer.GoalView do
       status: goal.status,
       parent_id: goal.parent_id,
       position: goal.position,
-      owned_by: goal.owned_by,
+      project_id: goal.project_id,
     }
   end
 

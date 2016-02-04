@@ -7,13 +7,13 @@ defmodule GoalServer.Goal do
     field :status, :string
     belongs_to :parent, __MODULE__
     field :position, :integer
-    belongs_to :owner, GoalServer.User, foreign_key: :owned_by
+    belongs_to :project, GoalServer.Project
     has_many :children, __MODULE__, foreign_key: :parent_id, on_delete: :delete_all
 
     timestamps
   end
 
-  @required_fields ~w(title status position owned_by)
+  @required_fields ~w(title status position project_id)
   @optional_fields ~w(body parent_id)
 
   @doc """

@@ -2,8 +2,9 @@ defmodule GoalServer.UserController do
   use GoalServer.Web, :controller
 
   alias GoalServer.User
-  alias GoalServer.Project
   alias GoalServer.Membership
+  alias GoalServer.Project
+  alias GoalServer.Goal
 
   plug :scrub_params, "user" when action in [:create, :update]
 
@@ -39,32 +40,32 @@ defmodule GoalServer.UserController do
           name: "#{user.nick}'s project'"
         }) |> Repo.insert!
 
-        membership = Membership.changeset(%Membership{}, %{
+        Membership.changeset(%Membership{}, %{
           project_id: project.id,
           user_id: user.id,
-          status: "member"
-        })
+          status: "authorized"
+        }) |> Repo.insert!
 
-        Ecto.build_assoc(
-          user, :root,
+        root = Goal.changeset(%Goal{}, %{
           title: user.nick,
           status: "todo",
           position: 0,
-        ) |> Repo.insert!
+          project_id: project.id
+        }) |> Repo.insert!
 
-        user |> Repo.preload([:root])
+        [user, root]
       end)
     else
       {:error, changeset}
     end
 
     case ret do
-      {:ok, user} ->
+      {:ok, [user, root]} ->
         conn
         |> delete_session(:auth)
         |> put_session(:current_user, user)
         |> put_flash(:info, "User created successfully.")
-        |> redirect(to: goal_path(conn, :show_html, user.root.id))
+        |> redirect(to: goal_path(conn, :show_html, root.id))
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end

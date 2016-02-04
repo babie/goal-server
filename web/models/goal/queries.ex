@@ -53,7 +53,7 @@ defmodule GoalServer.Goal.Queries do
           status,
           parent_id,
           position,
-          owned_by,
+          project_id,
           inserted_at,
           updated_at,
           depth
