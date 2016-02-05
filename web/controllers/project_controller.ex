@@ -6,7 +6,8 @@ defmodule GoalServer.ProjectController do
   plug :scrub_params, "project" when action in [:create, :update]
 
   def index_html(conn, _params) do
-    projects = Repo.all(Project)
+    user = get_session(conn, :current_user) |> Repo.preload([:projects])
+    projects = user.projects
     render(conn, "index.html", projects: projects)
   end
 

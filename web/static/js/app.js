@@ -189,12 +189,12 @@ page('/goals/:id', function(ctx, next) {
   app.update(initState => (state));
 });
 page('/projects', function(ctx, next) {
-  fetch('/api/projects')
+  const projects = fetch('/api/projects')
   .then((res) => {
     return res.json();
   }).then((json) => {
-    console.log(json);
-    return json;
+    console.log(json.data);
+    return json.data;
   });
 });
 
