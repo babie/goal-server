@@ -24,7 +24,7 @@ import ReactDOM from 'react-dom';
 import page from 'page';
 import TreeModel from 'tree-model';
 import GoalApp from './goal_app';
-
+import 'whatwg-fetch';
 
 const app = new GoalApp({
   renderer: el => {
@@ -188,4 +188,14 @@ page('/goals/:id', function(ctx, next) {
   }
   app.update(initState => (state));
 });
+page('/projects', function(ctx, next) {
+  fetch('/api/projects')
+  .then((res) => {
+    return res.json();
+  }).then((json) => {
+    console.log(json);
+    return json;
+  });
+});
+
 page.start();

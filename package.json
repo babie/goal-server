@@ -22,7 +22,8 @@
     "react": "^0.14.6",
     "react-dom": "^0.14.6",
     "sanitize.css": "^3.0.0",
-    "tree-model": "^1.0.4"
+    "tree-model": "^1.0.4",
+    "whatwg-fetch": "^0.11.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.2.3",
