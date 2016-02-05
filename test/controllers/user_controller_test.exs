@@ -48,7 +48,8 @@ defmodule GoalServer.UserControllerTest do
     assert project
     root = project.goals |> List.first
     assert root
-    assert redirected_to(conn) == goal_path(conn, :show_html, root.id)
+
+    assert redirected_to(conn) == project_path(conn, :index_html)
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do

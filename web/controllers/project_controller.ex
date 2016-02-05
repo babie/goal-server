@@ -5,6 +5,11 @@ defmodule GoalServer.ProjectController do
 
   plug :scrub_params, "project" when action in [:create, :update]
 
+  def index_html(conn, _params) do
+    projects = Repo.all(Project)
+    render(conn, "index.html", projects: projects)
+  end
+
   def index(conn, _params) do
     projects = Repo.all(Project)
     render(conn, "index.json", projects: projects)

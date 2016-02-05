@@ -46,26 +46,26 @@ defmodule GoalServer.UserController do
           status: "authorized"
         }) |> Repo.insert!
 
-        root = Goal.changeset(%Goal{}, %{
+        Goal.changeset(%Goal{}, %{
           title: user.nick,
           status: "todo",
           position: 0,
           project_id: project.id
         }) |> Repo.insert!
 
-        [user, root]
+        user
       end)
     else
       {:error, changeset}
     end
 
     case ret do
-      {:ok, [user, root]} ->
+      {:ok, user} ->
         conn
         |> delete_session(:auth)
         |> put_session(:current_user, user)
         |> put_flash(:info, "User created successfully.")
-        |> redirect(to: goal_path(conn, :show_html, root.id))
+        |> redirect(to: project_path(conn, :index_html))
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end

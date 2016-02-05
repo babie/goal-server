@@ -25,6 +25,7 @@ defmodule GoalServer.Router do
     get "/", PageController, :index
     get "/columned-treeview", PageController, :columned_treeview
     resources "/users", UserController
+    get "/projects", ProjectController, :index_html
     get "/goals/:id", GoalController, :show_html
   end
 
