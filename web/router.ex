@@ -48,5 +48,6 @@ defmodule GoalServer.Router do
     resources "/projects", ProjectController, except: [:new, :edit]
     resources "/memberships", MembershipController, except: [:new, :edit]
     resources "/statuses", StatusController, except: [:new, :edit]
+    resources "/activities", ActivityController, except: [:new, :edit]
   end
 end
