@@ -12,7 +12,7 @@ defmodule GoalServer.StatusView do
   def render("status.json", %{status: status}) do
     %{id: status.id,
       name: status.name,
-      project_id: status.project_id,
+      goal_id: status.goal_id,
       position: status.position,
       enable: status.enable}
   end

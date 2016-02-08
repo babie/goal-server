@@ -14,19 +14,18 @@ defmodule GoalServer.GoalTest do
   @invalid_attrs %{}
 
   setup do
-    project = fixture(:project)
-    root = fixture(:root, project: project)
+    user = fixture(:user)
+    root = fixture(:root, user: user)
     [c1, c2, c3] = fixture(:children, parent: root)
     gcs1 = fixture(:children, parent: c1)
     gcs2 = fixture(:children, parent: c2)
     gcs3 = fixture(:children, parent: c3)
-    [root, c1, c2, c3] = [root, c1, c2, c3] |> Enum.map(&(Repo.preload(&1, [:project])))
     
-    {:ok, project: project, root: root, children: [c1, c2, c3], gcs1: gcs1, gcs2: gcs2, gcs3: gcs3}
+    {:ok, user: user, root: root, children: [c1, c2, c3], gcs1: gcs1, gcs2: gcs2, gcs3: gcs3}
   end
 
-  test "changeset with valid attributes", %{project: project} do
-    changeset = Goal.changeset(%Goal{}, Map.merge(@valid_attrs, %{project_id: project.id}))
+  test "changeset with valid attributes", %{user: user} do
+    changeset = Goal.changeset(%Goal{}, Map.merge(@valid_attrs, %{user_id: user.id}))
     assert changeset.valid?
   end
 
@@ -76,8 +75,8 @@ defmodule GoalServer.GoalTest do
     end)
   end
 
-  test "insert", %{project: project, root: root, children: [c1, c2, c3]} do
-    attrs = Map.merge(@valid_attrs, %{parent_id: root.id, position: 1, project_id: project.id})
+  test "insert", %{user: user, root: root, children: [c1, c2, c3]} do
+    attrs = Map.merge(@valid_attrs, %{parent_id: root.id, position: 1, user_id: user.id})
     changeset = Goal.changeset(%Goal{}, attrs)
     {:ok, new} = Goal.Commands.insert(changeset)
     root = root |> Repo.preload(:children)

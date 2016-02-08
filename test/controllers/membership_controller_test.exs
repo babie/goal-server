@@ -7,9 +7,9 @@ defmodule GoalServer.MembershipControllerTest do
   @invalid_attrs %{}
 
   setup %{conn: conn} do
-    project = fixture(:project)
+    goal = fixture(:root)
     user = fixture(:user)
-    {:ok, conn: put_req_header(conn, "accept", "application/json"), project: project, user: user}
+    {:ok, conn: put_req_header(conn, "accept", "application/json"), goal: goal, user: user}
   end
 
   test "lists all entries on index", %{conn: conn} do
@@ -22,7 +22,7 @@ defmodule GoalServer.MembershipControllerTest do
     conn = get conn, membership_path(conn, :show, membership)
     assert json_response(conn, 200)["data"] == %{"id" => membership.id,
       "user_id" => membership.user_id,
-      "project_id" => membership.project_id,
+      "goal_id" => membership.goal_id,
       "status" => membership.status}
   end
 
@@ -32,8 +32,8 @@ defmodule GoalServer.MembershipControllerTest do
     end
   end
 
-  test "creates and renders resource when data is valid", %{conn: conn, project: project, user: user} do
-    attrs = Map.merge(@valid_attrs, %{project_id: project.id, user_id: user.id})
+  test "creates and renders resource when data is valid", %{conn: conn, goal: goal, user: user} do
+    attrs = Map.merge(@valid_attrs, %{goal_id: goal.id, user_id: user.id})
     conn = post conn, membership_path(conn, :create), membership: attrs
     assert json_response(conn, 201)["data"]["id"]
     assert Repo.get_by(Membership, @valid_attrs)
@@ -44,9 +44,9 @@ defmodule GoalServer.MembershipControllerTest do
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-  test "updates and renders chosen resource when data is valid", %{conn: conn, project: project, user: user} do
+  test "updates and renders chosen resource when data is valid", %{conn: conn, goal: goal, user: user} do
     membership = Repo.insert! %Membership{}
-    attrs = Map.merge(@valid_attrs, %{project_id: project.id, user_id: user.id})
+    attrs = Map.merge(@valid_attrs, %{goal_id: goal.id, user_id: user.id})
     conn = put conn, membership_path(conn, :update, membership), membership: attrs
     assert json_response(conn, 200)["data"]["id"]
     assert Repo.get_by(Membership, @valid_attrs)

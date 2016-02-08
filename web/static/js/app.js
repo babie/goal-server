@@ -188,8 +188,8 @@ page('/goals/:id', function(ctx, next) {
   }
   app.update(initState => (state));
 });
-page('/projects', function(ctx, next) {
-  const projects = fetch('/api/projects')
+page('/goals', function(ctx, next) {
+  const goals = fetch('/api/goals')
   .then((res) => {
     return res.json();
   }).then((json) => {

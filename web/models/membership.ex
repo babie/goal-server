@@ -4,12 +4,12 @@ defmodule GoalServer.Membership do
   schema "memberships" do
     field :status, :string
     belongs_to :user, GoalServer.User
-    belongs_to :project, GoalServer.Project
+    belongs_to :goal, GoalServer.Goal
 
     timestamps
   end
 
-  @required_fields ~w(project_id user_id status)
+  @required_fields ~w(goal_id user_id status)
   @optional_fields ~w()
 
   @doc """

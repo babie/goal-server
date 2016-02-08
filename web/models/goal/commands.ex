@@ -145,7 +145,6 @@ defmodule GoalServer.Goal.Commands do
             status,
             parent_id,
             position,
-            project_id,
             inserted_at,
             updated_at
           )
@@ -156,7 +155,6 @@ defmodule GoalServer.Goal.Commands do
           status,
           COALESCE(new_parent_id, $1::integer),
           new_position,
-          project_id,
           inserted_at,
           updated_at
         FROM (
@@ -185,7 +183,6 @@ defmodule GoalServer.Goal.Commands do
             s1.status,
             s2.new_id AS new_parent_id,
             s1.new_position AS new_position,
-            s1.project_id,
             s1.inserted_at,
             s1.updated_at
           FROM

@@ -19,7 +19,7 @@ defmodule GoalServer.StatusControllerTest do
     conn = get conn, status_path(conn, :show, status)
     assert json_response(conn, 200)["data"] == %{"id" => status.id,
       "name" => status.name,
-      "project_id" => status.project_id,
+      "goal_id" => status.goal_id,
       "position" => status.position,
       "enable" => status.enable}
   end

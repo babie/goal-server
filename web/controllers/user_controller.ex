@@ -3,7 +3,6 @@ defmodule GoalServer.UserController do
 
   alias GoalServer.User
   alias GoalServer.Membership
-  alias GoalServer.Project
   alias GoalServer.Goal
 
   plug :scrub_params, "user" when action in [:create, :update]
@@ -36,36 +35,31 @@ defmodule GoalServer.UserController do
         )
         Repo.insert!(provider)
 
-        project = Project.changeset(%Project{}, %{
-          name: "#{user.nick}'s project'"
+        goal = Goal.changeset(%Goal{}, %{
+          title: user.nick,
+          status: "todo",
+          position: 0,
         }) |> Repo.insert!
 
         Membership.changeset(%Membership{}, %{
-          project_id: project.id,
+          goal_id: goal.id,
           user_id: user.id,
           status: "authorized"
         }) |> Repo.insert!
 
-        Goal.changeset(%Goal{}, %{
-          title: user.nick,
-          status: "todo",
-          position: 0,
-          project_id: project.id
-        }) |> Repo.insert!
-
-        user
+        [user, goal]
       end)
     else
       {:error, changeset}
     end
 
     case ret do
-      {:ok, user} ->
+      {:ok, [user, root]} ->
         conn
         |> delete_session(:auth)
         |> put_session(:current_user, user)
         |> put_flash(:info, "User created successfully.")
-        |> redirect(to: project_path(conn, :index_html))
+        |> redirect(to: goal_path(conn, :show_html, root.id))
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end

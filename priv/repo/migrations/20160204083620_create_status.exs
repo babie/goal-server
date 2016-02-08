@@ -6,11 +6,11 @@ defmodule GoalServer.Repo.Migrations.CreateStatus do
       add :name, :string
       add :position, :integer
       add :enable, :boolean, default: false
-      add :project_id, references(:projects, on_delete: :nothing)
+      add :goal_id, references(:goals, on_delete: :nothing)
 
       timestamps
     end
-    create index(:statuses, [:project_id])
+    create index(:statuses, [:goal_id])
 
   end
 end

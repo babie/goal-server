@@ -42,14 +42,13 @@ defmodule GoalServer.UserControllerTest do
 
     membership = GoalServer.Membership
                   |> Repo.get_by(user_id: user.id)
-                  |> Repo.preload([:project])
+                  |> Repo.preload([:goal])
     assert membership
-    project = membership.project |> Repo.preload([:goals])
-    assert project
-    root = project.goals |> List.first
+
+    root = membership.goal
     assert root
 
-    assert redirected_to(conn) == project_path(conn, :index_html)
+    assert redirected_to(conn) == goal_path(conn, :show_html, root.id)
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do

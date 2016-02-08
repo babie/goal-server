@@ -5,7 +5,7 @@ defmodule GoalServer.Status do
     field :name, :string
     field :position, :integer
     field :enable, :boolean, default: false
-    belongs_to :project, GoalServer.Project
+    belongs_to :goal, GoalServer.Goal
 
     timestamps
   end

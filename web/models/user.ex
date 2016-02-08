@@ -5,7 +5,7 @@ defmodule GoalServer.User do
     field :nick, :string
     has_many :providers, GoalServer.Provider, on_delete: :delete_all
     has_many :memberships, GoalServer.Membership
-    has_many :projects, through: [:memberships, :project]
+    has_many :roots, through: [:memberships, :goal]
 
     timestamps
   end

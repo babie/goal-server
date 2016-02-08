@@ -12,7 +12,7 @@ defmodule GoalServer.MembershipView do
   def render("membership.json", %{membership: membership}) do
     %{id: membership.id,
       user_id: membership.user_id,
-      project_id: membership.project_id,
+      goal_id: membership.goal_id,
       status: membership.status}
   end
 end
