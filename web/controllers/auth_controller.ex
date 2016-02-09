@@ -22,13 +22,13 @@ defmodule GoalServer.AuthController do
         secret: auth.credentials.secret
       }
     }
-    IO.inspect auth
     provider = Repo.get_by(Provider, name: auth.provider, uid: auth.uid)
     if provider do
       provider = provider
-      |> Repo.preload([user: [:root]])
+      |> Repo.preload([user: [:roots]])
+      root = provider.user.roots |> List.first
       conn
-      |> redirect(to: goal_path(conn, :show_html, provider.user.root.id))
+      |> redirect(to: goal_path(conn, :show_html, root.id))
     else
       conn
       |> put_flash(:info, "Successfully authenticated.")
