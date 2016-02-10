@@ -80,6 +80,12 @@ defmodule GoalServer.GoalController do
     end
   end
 
+  def roots(conn, _params) do
+    user = get_session(conn, :current_user) |> Repo.preload(:roots)
+    roots = user.roots |> Enum.sort(&(&1.position < &2.position))
+    render(conn, "index.json", goals: roots)
+  end
+
   def children(conn, %{"id" => id}) do
     goal = Goal |> Repo.get!(id) |> Repo.preload(:children)
     # TODO: user check

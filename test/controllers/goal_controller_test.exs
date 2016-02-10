@@ -1,5 +1,6 @@
 defmodule GoalServer.GoalControllerTest do
   use GoalServer.ConnCase
+  use GoalServer.ControllerHelper, controller: GoalServer.GoalController
   import GoalServer.Fixtures
 
   alias GoalServer.Goal
@@ -14,7 +15,8 @@ defmodule GoalServer.GoalControllerTest do
 
   setup %{conn: conn} do
     user = fixture(:user)
-    root = fixture(:root, user: user)
+    root = fixture(:root)
+    fixture(:membership, %{user: user, goal: root})
     children = fixture(:children, parent: root)
     |> Enum.map(&(Repo.preload(&1, :parent)))
     {:ok, conn: put_req_header(conn, "accept", "application/json"), user: user, root: root, children: children}
@@ -88,10 +90,10 @@ defmodule GoalServer.GoalControllerTest do
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-  test "deletes chosen resource", %{conn: conn, root: root} do
-    conn = delete conn, goal_path(conn, :delete, root)
+  test "deletes chosen resource", %{conn: conn, children: [_, c2, _]} do
+    conn = delete conn, goal_path(conn, :delete, c2)
     assert response(conn, 204)
-    refute Repo.get(Goal, root.id)
+    refute Repo.get(Goal, c2.id)
   end
 
   test "copy", %{children: [_, c2, _]} do
@@ -105,6 +107,17 @@ defmodule GoalServer.GoalControllerTest do
 
     dest_titles = data |> Enum.map(&(&1["title"]))
     assert tgt_titles == dest_titles
+  end
+
+  test "get roots", %{conn: conn, user: user, root: root} do
+    conn = conn
+      |> with_session_and_flash
+      |> put_session(:current_user, user)
+      |> action(:roots)
+
+    ids = [root.id]
+    json_ids = json_response(conn, 200)["data"] |> Enum.map(&(&1["id"]))
+    assert json_ids == ids
   end
 
   test "get children", %{conn: conn, root: root, children: children} do

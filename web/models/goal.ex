@@ -8,6 +8,8 @@ defmodule GoalServer.Goal do
     belongs_to :parent, __MODULE__
     field :position, :integer
     has_many :children, __MODULE__, foreign_key: :parent_id, on_delete: :delete_all
+    has_many :memberships, GoalServer.Membership
+    has_many :users, through: [:memberships, :user]
 
     timestamps
   end
