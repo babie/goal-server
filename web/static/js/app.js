@@ -189,7 +189,7 @@ page('/goals/:id', function(ctx, next) {
   app.update(initState => (state));
 });
 page('/goals', function(ctx, next) {
-  const goals = fetch('/api/goals')
+  const goals = fetch('/api/goals', {credentials: 'same-origin'})
   .then((res) => {
     return res.json();
   }).then((json) => {

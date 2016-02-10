@@ -28,6 +28,7 @@ defmodule GoalServer.AuthController do
       |> Repo.preload([user: [:roots]])
       root = provider.user.roots |> List.first
       conn
+      |> put_session(:current_user, provider.user)
       |> redirect(to: goal_path(conn, :show_html, root.id))
     else
       conn

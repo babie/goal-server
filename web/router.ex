@@ -17,6 +17,7 @@ defmodule GoalServer.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
   end
 
   scope "/", GoalServer do
@@ -25,6 +26,7 @@ defmodule GoalServer.Router do
     get "/", PageController, :index
     get "/columned-treeview", PageController, :columned_treeview
     resources "/users", UserController
+    get "/goals", GoalController, :index_html
     get "/goals/:id", GoalController, :show_html
   end
 
