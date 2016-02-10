@@ -6,7 +6,9 @@ defmodule GoalServer.GoalController do
   plug :scrub_params, "goal" when action in [:create, :update]
 
   def index(conn, _params) do
-    goals = Repo.all(Goal)
+    user = get_session(conn, :current_user) |> Repo.preload(:roots)
+    roots = user.roots |> Enum.sort(&(&1.position < &2.position))
+    goals = roots |> Enum.flat_map(fn(r) -> Goal.Queries.self_and_descendants(r) end)
     render(conn, "index.json", goals: goals)
   end
 

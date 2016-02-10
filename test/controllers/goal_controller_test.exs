@@ -22,8 +22,12 @@ defmodule GoalServer.GoalControllerTest do
     {:ok, conn: put_req_header(conn, "accept", "application/json"), user: user, root: root, children: children}
   end
 
-  test "lists all entries on index", %{conn: conn, root: root} do
-    conn = get conn, goal_path(conn, :index)
+  test "lists all entries on index", %{conn: conn, user: user, root: root} do
+    conn = conn
+      |> with_session_and_flash
+      |> put_session(:current_user, user)
+      |> action(:index)
+    #conn = get conn, goal_path(conn, :index)
     json_ids = json_response(conn, 200)["data"] |> Enum.map(&(&1["id"]))
     ids = root |> Goal.Queries.self_and_descendants |> Enum.map(&(&1.id))
     assert json_ids == ids
@@ -46,7 +50,7 @@ defmodule GoalServer.GoalControllerTest do
     end
   end
 
-  test "creates and renders resource when data is valid", %{conn: conn, user: user, root: root, children: children} do
+  test "creates and renders resource when data is valid", %{conn: conn, root: root, children: children} do
     attrs = Map.merge(@valid_attrs, %{parent_id: root.id, position: 1})
     conn = post conn, goal_path(conn, :create), goal: attrs
 
