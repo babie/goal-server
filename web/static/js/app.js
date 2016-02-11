@@ -23,6 +23,7 @@ import "phoenix_html"
 import ReactDOM from 'react-dom';
 import page from 'page';
 import TreeModel from 'tree-model';
+import _ from 'lodash';
 import GoalApp from './goal_app';
 import 'whatwg-fetch';
 
@@ -189,12 +190,35 @@ page('/goals/:id', function(ctx, next) {
   app.update(initState => (state));
 });
 page('/goals', function(ctx, next) {
-  const goals = fetch('/api/goals', {credentials: 'same-origin'})
+  fetch('/api/goals', {credentials: 'same-origin'})
   .then((res) => {
     return res.json();
   }).then((json) => {
-    console.log(json.data);
-    return json.data;
+    const goals = json.data;
+    let trees = [];
+    let roots = [];
+    goals.forEach((g) => {
+      if (g.parent_id) {
+        let n = trees[trees.length -1].parse(g);
+        let r = roots[roots.length - 1];
+        let p = r.first((p) => {
+          return p.model.id === n.model.parent_id;
+        });
+        p.addChild(n);
+      }
+      else {
+        let t = new TreeModel();
+        trees.push(t);
+        let r = t.parse(g);
+        roots.push(r);
+      }
+      const state = {
+        self_and_ancestor_ids: [roots[0].model.id],
+        tree: trees[0],
+        root: roots[0],
+      };
+      app.update(initState => (state));
+    });
   });
 });
 
