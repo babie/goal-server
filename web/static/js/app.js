@@ -41,7 +41,7 @@ const app = new GoalApp({
 });
 
 page('/goals/:id', function(ctx, next) {
-  const tree = new TreeModel({childrenPropertyName: "descendants"});
+  const tree = new TreeModel();
   const root = tree.parse(
     {
       id: 1,
@@ -51,7 +51,7 @@ page('/goals/:id', function(ctx, next) {
       parent_id: null,
       position: 0,
       owned_by: 1,
-      descendants: [
+      children: [
         {
           id: 2,
           title: "c1",
@@ -60,7 +60,7 @@ page('/goals/:id', function(ctx, next) {
           parent_id: 1,
           position: 0,
           owned_by: 1,
-          descendants: [
+          children: [
             {
               id: 3,
               title: "c1-1",
@@ -69,7 +69,7 @@ page('/goals/:id', function(ctx, next) {
               parent_id: 2,
               position: 0,
               owned_by: 1,
-              descendants: []
+              children: []
             },
             {
               id: 4,
@@ -79,7 +79,7 @@ page('/goals/:id', function(ctx, next) {
               parent_id: 2,
               position: 1,
               owned_by: 1,
-              descendants: []
+              children: []
             },
             {
               id: 5,
@@ -89,7 +89,7 @@ page('/goals/:id', function(ctx, next) {
               parent_id: 2,
               position: 2,
               owned_by: 1,
-              descendants: []
+              children: []
             },
           ]
         },
@@ -101,7 +101,7 @@ page('/goals/:id', function(ctx, next) {
           parent_id: 1,
           position: 1,
           owned_by: 1,
-          descendants: [
+          children: [
             {
               id: 7,
               title: "c2-1",
@@ -110,7 +110,7 @@ page('/goals/:id', function(ctx, next) {
               parent_id: 6,
               position: 0,
               owned_by: 1,
-              descendants: []
+              children: []
             },
             {
               id: 8,
@@ -120,7 +120,7 @@ page('/goals/:id', function(ctx, next) {
               parent_id: 6,
               position: 1,
               owned_by: 1,
-              descendants: []
+              children: []
             },
             {
               id: 9,
@@ -130,7 +130,7 @@ page('/goals/:id', function(ctx, next) {
               parent_id: 6,
               position: 2,
               owned_by: 1,
-              descendants: []
+              children: []
             },
           ]
         },
@@ -142,7 +142,7 @@ page('/goals/:id', function(ctx, next) {
           parent_id: 1,
           position: 2,
           owned_by: 1,
-          descendants: [
+          children: [
             {
               id: 11,
               title: "c3-1",
@@ -151,7 +151,7 @@ page('/goals/:id', function(ctx, next) {
               parent_id: 10,
               position: 0,
               owned_by: 1,
-              descendants: []
+              children: []
             },
             {
               id: 12,
@@ -161,7 +161,7 @@ page('/goals/:id', function(ctx, next) {
               parent_id: 10,
               position: 1,
               owned_by: 1,
-              descendants: []
+              children: []
             },
             {
               id: 13,
@@ -171,7 +171,7 @@ page('/goals/:id', function(ctx, next) {
               parent_id: 10,
               position: 2,
               owned_by: 1,
-              descendants: []
+              children: []
             },
           ]
         },
