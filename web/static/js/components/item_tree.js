@@ -93,6 +93,7 @@ class ItemTreeComponent extends Component {
           parent_id: this.props.node.model.id
         });
         console.log(newGoal);
+        //this.props.node.addChild(newGoal);
         // this.dispatch("goal:create", newGoal);
         this.setState({newing: false, newTitle: ""});
         break;
@@ -123,7 +124,7 @@ class ItemTreeComponent extends Component {
     let descendants_tree = null;
     if (!_.isEmpty(this.props.node.children)) {
       descendants_tree = this.props.node.children.map((n, i) => {
-        return <ItemTreeComponent key={n.model.id} node={n} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={this.props.h + 1} v={this.props.v + i} />;
+        return <ItemTreeComponent key={n.model.id} tree={this.props.tree} node={n} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={this.props.h + 1} v={this.props.v + i} />;
       });
     }
     let openClass = null;
