@@ -87,14 +87,28 @@ class ItemTreeComponent extends Component {
         this.setState({newing: false, newTitle: ""});
         break;
       case 'Return':
-        const newGoal = this.props.tree.parse({
-          title: event.target.value.trim(),
-          body: "",
-          parent_id: this.props.node.model.id
+        fetch('/api/goals', {
+          credentials: 'include',
+          method: 'post',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            goal: {
+              title: event.target.value.trim(),
+              parent_id: this.props.node.model.id,
+              position: 0,
+              status: "todo",
+            }
+          }),
+        }).then((res) => {
+          return res.json();
+        }).then((json) => {
+          const newGoal = this.props.tree.parse(json.data);
+          const node = this.props.node.addChild(newGoal);
+          this.dispatch("self_and_ancestor_ids:update", node);
         });
-        console.log(newGoal);
-        //this.props.node.addChild(newGoal);
-        // this.dispatch("goal:create", newGoal);
         this.setState({newing: false, newTitle: ""});
         break;
       default:
