@@ -135,20 +135,6 @@ class ItemTreeComponent extends Component {
   }
 
   render() {
-    let descendants_tree = null;
-    if (!_.isEmpty(this.props.node.children)) {
-      descendants_tree = this.props.node.children.map((n, i) => {
-        return <ItemTreeComponent key={n.model.id} tree={this.props.tree} node={n} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={this.props.h + 1} v={this.props.v + i} />;
-      });
-    }
-    let openClass = null;
-    if (_.some(this.props.self_and_ancestor_ids, (v) => (v === this.props.node.model.id || v === this.props.node.model.parent_id))) {
-      openClass = "open";
-    }
-    let currentClass = null;
-    if (this.props.node.model.id === this.props.self_and_ancestor_ids[0]) {
-      currentClass = "current";
-    }
     let newItem = null;
     if (this.state.newing) {
       newItem = (
@@ -166,17 +152,36 @@ class ItemTreeComponent extends Component {
         </li>
       );
     }
+    let tree = null;
+    if (!_.isEmpty(this.props.node.children)) {
+      tree = this.props.node.children.map((n, i) => {
+        return <ItemTreeComponent key={n.model.id} tree={this.props.tree} node={n} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={this.props.h + 1} v={this.props.v + i} />;
+      });
+    }
+    const descendants_tree = (
+      <ul>
+        {newItem}
+        {tree}
+      </ul>
+    );
+    let openClass = null;
+    if (_.some(this.props.self_and_ancestor_ids, (v) => (v === this.props.node.model.id || v === this.props.node.model.parent_id))) {
+      openClass = "open";
+    }
+    let currentClass = null;
+    if (this.props.node.model.id === this.props.self_and_ancestor_ids[0]) {
+      currentClass = "current";
+    }
 
     return (
-      <li className={openClass}>
-        <section className={currentClass} tabIndex="0" onFocus={this.handleFocus.bind(this)} onClick={this.handleFocus.bind(this)} onKeyDown={this.handleKeyDown.bind(this)} ref="current">
-          {this.props.node.model.title}
-        </section>
-        <ul>
-          {newItem}
+      <ul>
+        <li className={openClass}>
+          <section className={currentClass} tabIndex="0" onFocus={this.handleFocus.bind(this)} onClick={this.handleFocus.bind(this)} onKeyDown={this.handleKeyDown.bind(this)} ref="current">
+            {this.props.node.model.title}
+          </section>
           {descendants_tree}
-        </ul>
-      </li>
+        </li>
+      </ul>
     );
   }
 }
