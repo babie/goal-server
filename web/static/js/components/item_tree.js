@@ -174,14 +174,14 @@ class ItemTreeComponent extends Component {
     }
 
     return (
-      <ul>
+      <div>
         <li className={openClass}>
           <section className={currentClass} tabIndex="0" onFocus={this.handleFocus.bind(this)} onClick={this.handleFocus.bind(this)} onKeyDown={this.handleKeyDown.bind(this)} ref="current">
             {this.props.node.model.title}
           </section>
           {descendants_tree}
         </li>
-      </ul>
+      </div>
     );
   }
 }
