@@ -207,7 +207,15 @@ page('/goals', function(ctx, next) {
         p.addChild(n);
       }
       else {
-        let t = new TreeModel();
+        let t = new TreeModel({modelComparatorFn: (a, b) => {
+          if (a.position < b.position) {
+            return -1;
+          }
+          if (a.position > b.position) {
+            return 1;
+          }
+          return 0;
+        }});
         trees.push(t);
         let r = t.parse(g);
         roots.push(r);

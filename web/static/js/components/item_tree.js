@@ -8,6 +8,7 @@ class ItemTreeComponent extends Component {
     super(props);
     this.state = {
       newing: false,
+      newPosition: null,
       newTitle: "",
     };
   }
@@ -61,8 +62,14 @@ class ItemTreeComponent extends Component {
           this.dispatch("self_and_ancestor_ids:update", child);
         }
         else {
-          this.setState({newing: true});
+          this.setState({newing: true, newPosition: "child", newTitle: ""});
         }
+        break;
+      case 'N':
+        this.setState({newing: true, newPosition: "after", newTitle: ""});
+        break;
+      case 'Shift+N':
+        this.setState({newing: true, newPosition: "before", newTitle: ""});
         break;
     }
   }
@@ -70,7 +77,7 @@ class ItemTreeComponent extends Component {
   handleNewTitleBlur(event) {
     // TODO: think case of body... editing
     if (this.state.newing) {
-      this.setState({newing: false, newTitle: ""});
+      this.setState({newing: false, newPosition: null, newTitle: ""});
     }
   }
 
@@ -84,9 +91,29 @@ class ItemTreeComponent extends Component {
     const detector = new KeyStringDetector();
     switch (detector.detect(event)) {
       case 'Esc':
-        this.setState({newing: false, newTitle: ""});
+        this.setState({newing: false, newPosition: null, newTitle: ""});
         break;
       case 'Return':
+        let parent = null;
+        let parent_id = null;
+        let position = null;
+        switch (this.state.newPosition) {
+          case "before":
+            parent = this.props.node.parent;
+            parent_id = this.props.node.model.parent_id;
+            position = this.props.node.model.position;
+            break;
+          case "after":
+            parent = this.props.node.parent;
+            parent_id = this.props.node.model.parent_id;
+            position = this.props.node.model.position + 1;
+            break;
+          case "child":
+            parent = this.props.node;
+            parent_id = this.props.node.model.id;
+            position = 0;
+            break;
+        }
         fetch('/api/goals', {
           credentials: 'include',
           method: 'post',
@@ -97,8 +124,8 @@ class ItemTreeComponent extends Component {
           body: JSON.stringify({
             goal: {
               title: event.target.value.trim(),
-              parent_id: this.props.node.model.id,
-              position: 0,
+              parent_id: parent_id,
+              position: position,
               status: "todo",
             }
           }),
@@ -106,10 +133,15 @@ class ItemTreeComponent extends Component {
           return res.json();
         }).then((json) => {
           const newGoal = this.props.tree.parse(json.data);
-          const node = this.props.node.addChild(newGoal);
+          parent.children.forEach((c) => {
+            if (c.model.position >= newGoal.model.position) {
+              c.model.position += 1;
+            }
+          })
+          const node = parent.addChild(newGoal);
           this.dispatch("self_and_ancestor_ids:update", node);
         });
-        this.setState({newing: false, newTitle: ""});
+        this.setState({newing: false, newPosition: null, newTitle: ""});
         break;
       default:
         break;
@@ -158,9 +190,23 @@ class ItemTreeComponent extends Component {
         return <ItemTreeComponent key={n.model.id} tree={this.props.tree} node={n} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={this.props.h + 1} v={this.props.v + i} />;
       });
     }
+    let newBeforeItem = null;
+    let newAfterItem = null;
+    let newChildItem = null;
+    switch (this.state.newPosition) {
+      case "before":
+        newBeforeItem = newItem;
+        break;
+      case "after":
+        newAfterItem = newItem;
+        break;
+      case "child":
+        newChildItem = newItem;
+        break;
+    }
     const descendants_tree = (
       <ul>
-        {newItem}
+        {newChildItem}
         {tree}
       </ul>
     );
@@ -175,12 +221,14 @@ class ItemTreeComponent extends Component {
 
     return (
       <div>
+        {newBeforeItem}
         <li className={openClass}>
           <section className={currentClass} tabIndex="0" onFocus={this.handleFocus.bind(this)} onClick={this.handleFocus.bind(this)} onKeyDown={this.handleKeyDown.bind(this)} ref="current">
             {this.props.node.model.title}
           </section>
           {descendants_tree}
         </li>
+        {newAfterItem}
       </div>
     );
   }
