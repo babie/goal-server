@@ -32,6 +32,7 @@ class ItemTreeComponent extends Component {
   handleKeyDown(event) {
     const current = this.props.node;
     let sibling = null;
+    let parent = null;
 
     const detector = new KeyStringDetector();
     switch (detector.detect(event)) {
@@ -70,6 +71,32 @@ class ItemTreeComponent extends Component {
         break;
       case 'Shift+N':
         this.setState({newing: true, newPosition: "before", newTitle: ""});
+        break;
+      case 'Shift+X':
+        parent = this.props.parent;
+        fetch('/api/goals/' + current.model.id, {
+          credentials: 'include',
+          method: 'delete',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+        }).then((res) => {
+          console.log(res);
+          return res.status;
+        }).then((status) => {
+          current.drop();
+          parent.forceUpdate();
+        });
+        if (current.parent) {
+          sibling = current.parent.children[current.model.position - 1] || current.parent.children[current.model.position + 1];
+          if (sibling) {
+            this.dispatch("self_and_ancestor_ids:update", sibling);
+          }
+          else {
+            this.dispatch("self_and_ancestor_ids:update", current.parent);
+          }
+        }
         break;
     }
   }
@@ -187,7 +214,7 @@ class ItemTreeComponent extends Component {
     let tree = null;
     if (!_.isEmpty(this.props.node.children)) {
       tree = this.props.node.children.map((n, i) => {
-        return <ItemTreeComponent key={n.model.id} tree={this.props.tree} node={n} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={this.props.h + 1} v={this.props.v + i} />;
+        return <ItemTreeComponent key={n.model.id} parent={this} tree={this.props.tree} node={n} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={this.props.h + 1} v={this.props.v + i} />;
       });
     }
     let newBeforeItem = null;
@@ -220,7 +247,7 @@ class ItemTreeComponent extends Component {
     }
 
     return (
-      <div>
+      <div ref="self">
         {newBeforeItem}
         <li className={openClass}>
           <section className={currentClass} tabIndex="0" onFocus={this.handleFocus.bind(this)} onClick={this.handleFocus.bind(this)} onKeyDown={this.handleKeyDown.bind(this)} ref="current">
