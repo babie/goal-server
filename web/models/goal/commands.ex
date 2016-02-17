@@ -56,6 +56,16 @@ defmodule GoalServer.Goal.Commands do
     ) |> Repo.update_all([])
   end
 
+  def update_positions_on_delete(delete_parent_id, delete_position) do
+    from(
+      g in Goal,
+      where:
+        g.parent_id == ^delete_parent_id and
+        g.position > ^delete_position,
+      update: [inc: [position: -1]]
+    ) |> Repo.update_all([])
+  end
+
   def update_positions(changeset) do
     parent_id_changed = Map.has_key?(changeset.changes, :parent_id)
     old_parent_id = changeset.model.parent_id
@@ -117,6 +127,15 @@ defmodule GoalServer.Goal.Commands do
         changeset = Ecto.Changeset.add_error(changeset, :parent_id, "can't be empty")
       end
       {:error, changeset}
+    end
+  end
+  
+  def delete(goal) do
+    unless Goal.Queries.root?(goal) do
+      Repo.transaction(fn ->
+        update_positions_on_delete(goal.parent_id, goal.position)
+        Repo.delete!(goal)
+      end)
     end
   end
 

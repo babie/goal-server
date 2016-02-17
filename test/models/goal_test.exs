@@ -120,13 +120,16 @@ defmodule GoalServer.GoalTest do
     end
   end
 
-  test "delete", %{root: root, children: [_c1, c2, _c3], gcs2: [_gcs2_1, gcs2_2, _gcs2_3]} do
+  test "delete", %{root: root, children: [_c1, c2, c3], gcs2: [_gcs2_1, gcs2_2, _gcs2_3]} do
     ds = fixture(:children, parent: gcs2_2)
-    Repo.delete!(c2)
+    Goal.Commands.delete(c2)
     all = Goal.Queries.self_and_descendants(root)
     Enum.each([c2|ds], fn(g) ->
       refute Enum.any?(all, fn(e) -> e.id == g.id end)
     end)
+
+    new_c3 = Repo.get(Goal, c3.id)
+    assert new_c3.position == c3.position - 1
   end
 
   test "copy", %{root: root, gcs2: [_gcs2_1, gcs2_2, _gcs2_3]} do
