@@ -10,6 +10,8 @@ class ItemTreeComponent extends Component {
       newing: false,
       newPosition: null,
       newTitle: "",
+      editing: false,
+      editTitle: this.props.node.model.title,
     };
   }
 
@@ -72,6 +74,9 @@ class ItemTreeComponent extends Component {
       case 'Shift+N':
         this.setState({newing: true, newPosition: "before", newTitle: ""});
         break;
+      case 'E':
+        this.setState({editing: true, editTitle: this.props.node.model.title});
+        break;
       case 'Shift+X':
         parent = this.props.parent;
         fetch('/api/goals/' + current.model.id, {
@@ -102,7 +107,6 @@ class ItemTreeComponent extends Component {
   }
 
   handleNewTitleBlur(event) {
-    // TODO: think case of body... editing
     if (this.state.newing) {
       this.setState({newing: false, newPosition: null, newTitle: ""});
     }
@@ -175,6 +179,70 @@ class ItemTreeComponent extends Component {
     }
   }
 
+  handleEditTitleBlur(event) {
+    if (this.state.editing) {
+      this.setState({editiing: false, editTitle: this.props.node.model.title});
+    }
+  }
+
+  handleEditTitleChange(event) {
+    if (this.state.editing) {
+      this.setState({editTitle: event.target.value});
+    }
+  }
+
+  handleEditTitleKeyDown(event) {
+    const detector = new KeyStringDetector();
+    switch (detector.detect(event)) {
+      case 'Esc':
+        this.setState({editing: false, editTitle: this.props.node.model.title});
+        break;
+      case 'Return':
+        const current = this.props.node;
+        fetch('/api/goals/' + current.model.id, {
+          credentials: 'include',
+          method: 'put',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            goal: {
+              title: event.target.value.trim(),
+              body: null,
+              parent_id: current.model.parent_id,
+              position: current.model.position,
+              status: "todo",
+            }
+          }),
+        }).then((res) => {
+          return res.json();
+        }).then((json) => {
+          current.model.title = json.data.title;
+          this.dispatch("self_and_ancestor_ids:update", current);
+        });
+        this.setState({editing: false});
+        break;
+      default:
+        break;
+    }
+  }
+
+  /*
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      nextProps.node !== this.props.node ||
+      nextProps.self_and_ancestor_ids !== this.props.self_and_ancestor_ids ||
+      nextProps.h !== this.props.h ||
+      nextProps.v !== this.props.v ||
+      nextState.newing !== this.state.newing ||
+      nextState.newTitle !== this.state.newTitle ||
+      nextState.editing !== this.state.editing ||
+      nextState.editTitle !== this.state.editTitle
+    );
+  }
+  */
+
   componentDidMount() {
     if (this.props.node.model.id === this.props.self_and_ancestor_ids[0]) {
       setTimeout(() => { 
@@ -187,6 +255,11 @@ class ItemTreeComponent extends Component {
     if (!prevProps.newing && this.state.newing) {
       const input = this.refs.newTitleField;
       input.focus();
+    }
+    else if (!prevProps.editing && this.state.editing) {
+      const input = this.refs.editTitleField;
+      input.focus();
+      input.setSelectionRange(input.value.length, input.value.length);
     }
     else if (this.props.node.model.id === this.props.self_and_ancestor_ids[0]) {
       this.refs.current.focus();
@@ -237,22 +310,44 @@ class ItemTreeComponent extends Component {
         {tree}
       </ul>
     );
+    let section = null;
+    let editItem = null;
+    if (this.state.editing) {
+      editItem = (
+        <section tabIndex="0">
+          <input
+            ref="editTitleField"
+            className="edit"
+            value={this.props.editTitle}
+            onBlur={this.handleEditTitleBlur.bind(this)}
+            onChange={this.handleEditTitleChange.bind(this)}
+            onKeyDown={this.handleEditTitleKeyDown.bind(this)}
+          />
+        </section>
+      );
+    }
+    else {
+      let currentClass = null;
+      if (this.props.node.model.id === this.props.self_and_ancestor_ids[0]) {
+        currentClass = "current";
+      }
+      section = (
+        <section className={currentClass} tabIndex="0" onFocus={this.handleFocus.bind(this)} onClick={this.handleFocus.bind(this)} onKeyDown={this.handleKeyDown.bind(this)} ref="current">
+          {this.props.node.model.title}
+        </section>
+      );
+    }
     let openClass = null;
     if (_.some(this.props.self_and_ancestor_ids, (v) => (v === this.props.node.model.id || v === this.props.node.model.parent_id))) {
       openClass = "open";
-    }
-    let currentClass = null;
-    if (this.props.node.model.id === this.props.self_and_ancestor_ids[0]) {
-      currentClass = "current";
     }
 
     return (
       <div ref="self">
         {newBeforeItem}
         <li className={openClass}>
-          <section className={currentClass} tabIndex="0" onFocus={this.handleFocus.bind(this)} onClick={this.handleFocus.bind(this)} onKeyDown={this.handleKeyDown.bind(this)} ref="current">
-            {this.props.node.model.title}
-          </section>
+          {section}
+          {editItem}
           {descendants_tree}
         </li>
         {newAfterItem}
