@@ -287,7 +287,16 @@ class ItemTreeComponent extends Component {
     let tree = null;
     if (!_.isEmpty(this.props.node.children)) {
       tree = this.props.node.children.map((n, i) => {
-        return <ItemTreeComponent key={n.model.id} parent={this} tree={this.props.tree} node={n} self_and_ancestor_ids={this.props.self_and_ancestor_ids} h={this.props.h + 1} v={this.props.v + i} />;
+        return (
+          <ItemTreeComponent
+            key={n.model.id}
+            parent={this}
+            tree={this.props.tree} 
+            node={n}
+            self_and_ancestor_ids={this.props.self_and_ancestor_ids}
+            h={this.props.h + 1}
+            v={this.props.v + i} />
+        );
       });
     }
     let newBeforeItem = null;
@@ -332,7 +341,13 @@ class ItemTreeComponent extends Component {
         currentClass = "current";
       }
       section = (
-        <section className={currentClass} tabIndex="0" onFocus={this.handleFocus.bind(this)} onClick={this.handleFocus.bind(this)} onKeyDown={this.handleKeyDown.bind(this)} ref="current">
+        <section
+          className={currentClass}
+          tabIndex="0"
+          onFocus={this.handleFocus.bind(this)}
+          onClick={this.handleFocus.bind(this)}
+          onKeyDown={this.handleKeyDown.bind(this)}
+          ref="current">
           {this.props.node.model.title}
         </section>
       );
