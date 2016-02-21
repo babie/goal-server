@@ -228,21 +228,6 @@ class ItemTreeComponent extends Component {
     }
   }
 
-  /*
-  shouldComponentUpdate(nextProps, nextState) {
-    return (
-      nextProps.node !== this.props.node ||
-      nextProps.self_and_ancestor_ids !== this.props.self_and_ancestor_ids ||
-      nextProps.h !== this.props.h ||
-      nextProps.v !== this.props.v ||
-      nextState.newing !== this.state.newing ||
-      nextState.newTitle !== this.state.newTitle ||
-      nextState.editing !== this.state.editing ||
-      nextState.editTitle !== this.state.editTitle
-    );
-  }
-  */
-
   componentDidMount() {
     if (this.props.node.model.id === this.props.self_and_ancestor_ids[0]) {
       setTimeout(() => { 
