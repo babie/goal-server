@@ -169,13 +169,7 @@ class ItemTreeComponent extends Component {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            goal: {
-              title: event.target.value.trim(),
-              body: null,
-              parent_id: parent_id,
-              position: position,
-              status: "todo",
-            }
+            goal: tmpGoal.model
           }),
         }).then((res) => {
           return res.json();
