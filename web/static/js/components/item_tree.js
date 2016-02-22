@@ -145,6 +145,22 @@ class ItemTreeComponent extends Component {
             position = 0;
             break;
         }
+        const tmpGoal = this.props.tree.parse({
+          id: "new",
+          title: event.target.value.trim(),
+          body: null,
+          parent_id: parent_id,
+          position: position,
+          status: "todo"
+        });
+        parent.children.forEach((c) => {
+          if (c.model.position >= tmpGoal.model.position) {
+            c.model.position += 1;
+          }
+        })
+        const node = parent.addChild(tmpGoal);
+        this.dispatch("self_and_ancestor_ids:update", node);
+
         fetch('/api/goals', {
           credentials: 'include',
           method: 'post',
@@ -155,6 +171,7 @@ class ItemTreeComponent extends Component {
           body: JSON.stringify({
             goal: {
               title: event.target.value.trim(),
+              body: null,
               parent_id: parent_id,
               position: position,
               status: "todo",
@@ -163,14 +180,8 @@ class ItemTreeComponent extends Component {
         }).then((res) => {
           return res.json();
         }).then((json) => {
-          const newGoal = this.props.tree.parse(json.data);
-          parent.children.forEach((c) => {
-            if (c.model.position >= newGoal.model.position) {
-              c.model.position += 1;
-            }
-          })
-          const node = parent.addChild(newGoal);
-          this.dispatch("self_and_ancestor_ids:update", node);
+          const node = parent.children[position];
+          node.model.id = json.data.id;
         });
         this.setState({newing: false, newPosition: null, newTitle: ""});
         break;
