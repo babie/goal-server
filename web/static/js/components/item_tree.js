@@ -348,7 +348,7 @@ class ItemTreeComponent extends Component {
     }
 
     return (
-      <div ref="self">
+      <div>
         {newBeforeItem}
         <li className={openClass}>
           {section}
