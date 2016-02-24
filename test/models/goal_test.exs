@@ -7,7 +7,7 @@ defmodule GoalServer.GoalTest do
   @valid_attrs %{
     title: "some content",
     body: "some content",
-    status: "some content",
+    status: 0,
     position: 0,
     parent_id: nil,
   }

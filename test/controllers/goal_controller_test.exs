@@ -7,7 +7,7 @@ defmodule GoalServer.GoalControllerTest do
   @valid_attrs %{
     title: "some content",
     body: "some content",
-    status: "todo",
+    status: 0,
     position: 0,
     parent_id: nil,
   }
@@ -72,7 +72,7 @@ defmodule GoalServer.GoalControllerTest do
   end
 
   test "updates and renders chosen resource when data is valid", %{conn: conn, children: [_, c2, _]} do
-    attrs = %{title: "bar", body: "hoge", status: "doing", parent_id: c2.id, position: c2.position}
+    attrs = %{title: "bar", body: "hoge", status: 0, parent_id: c2.id, position: c2.position}
     conn = put conn, goal_path(conn, :update, c2), goal: attrs
 
     id = json_response(conn, 200)["data"]["id"]

@@ -5,7 +5,7 @@ defmodule GoalServer.Repo.Migrations.CreateGoal do
     create table(:goals) do
       add :title, :string, null: false
       add :body, :text
-      add :status, :string, null: false
+      add :status, :integer, null: false
       add :parent_id, references(:goals, on_delete: :delete_all)
       add :position, :integer
 

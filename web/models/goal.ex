@@ -4,7 +4,7 @@ defmodule GoalServer.Goal do
   schema "goals" do
     field :title, :string
     field :body, :string
-    field :status, :string
+    field :status, :integer
     belongs_to :parent, __MODULE__
     field :position, :integer
     has_many :children, __MODULE__, foreign_key: :parent_id, on_delete: :delete_all

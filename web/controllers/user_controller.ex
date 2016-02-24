@@ -37,7 +37,7 @@ defmodule GoalServer.UserController do
 
         goal = Goal.changeset(%Goal{}, %{
           title: user.nick,
-          status: "todo",
+          status: 0,
           position: 0,
         }) |> Repo.insert!
 
