@@ -151,7 +151,7 @@ class ItemTreeComponent extends Component {
           body: null,
           parent_id: parent_id,
           position: position,
-          status: 0
+          status_id: 0
         });
         parent.children.forEach((c) => {
           if (c.model.position >= tmpGoal.model.position) {
@@ -217,7 +217,7 @@ class ItemTreeComponent extends Component {
               body: null,
               parent_id: current.model.parent_id,
               position: current.model.position,
-              status: 0,
+              status_id: 0,
             }
           }),
         }).then((res) => {

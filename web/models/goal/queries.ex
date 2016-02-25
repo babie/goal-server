@@ -50,7 +50,7 @@ defmodule GoalServer.Goal.Queries do
           id,
           title,
           body,
-          status,
+          status_id,
           parent_id,
           position,
           inserted_at,

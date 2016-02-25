@@ -24,7 +24,7 @@ defmodule GoalServer.Fixtures do
   def fixture(:root, assoc) do
     Repo.insert! %Goal{
       title: "goal",
-      status: 0,
+      status_id: 0,
       position: 0,
     }
   end
@@ -35,7 +35,7 @@ defmodule GoalServer.Fixtures do
 
       child = Repo.insert! %Goal{
         title: "#{parent.title}-#{i}",
-        status: 0,
+        status_id: 0,
         parent_id: parent.id,
         position: i,
       }

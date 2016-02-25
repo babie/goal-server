@@ -4,7 +4,7 @@ defmodule GoalServer.Goal do
   schema "goals" do
     field :title, :string
     field :body, :string
-    field :status, :integer
+    field :status_id, :integer
     belongs_to :parent, __MODULE__
     field :position, :integer
     has_many :children, __MODULE__, foreign_key: :parent_id, on_delete: :delete_all
@@ -14,7 +14,7 @@ defmodule GoalServer.Goal do
     timestamps
   end
 
-  @required_fields ~w(title status position)
+  @required_fields ~w(title status_id position)
   @optional_fields ~w(body parent_id)
 
   @doc """
