@@ -47,8 +47,11 @@ defmodule GoalServer.UserControllerTest do
 
     root = membership.goal
     assert root
-
     assert redirected_to(conn) == goal_path(conn, :show_html, root.id)
+
+    statuses = GoalServer.Status |> Repo.all |> Enum.sort(&(&1.position < &2.position)) |> Enum.map(&(&1.name))
+
+    assert statuses == ["Close", "ToDo", "Doing", "Done"]
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do

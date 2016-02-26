@@ -10,6 +10,7 @@ defmodule GoalServer.Goal do
     has_many :children, __MODULE__, foreign_key: :parent_id, on_delete: :delete_all
     has_many :memberships, GoalServer.Membership
     has_many :users, through: [:memberships, :user]
+    has_many :statuses, GoalServer.Status
 
     timestamps
   end

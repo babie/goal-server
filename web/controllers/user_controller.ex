@@ -4,6 +4,7 @@ defmodule GoalServer.UserController do
   alias GoalServer.User
   alias GoalServer.Membership
   alias GoalServer.Goal
+  alias GoalServer.Status
 
   plug :scrub_params, "user" when action in [:create, :update]
 
@@ -45,6 +46,31 @@ defmodule GoalServer.UserController do
           goal_id: goal.id,
           user_id: user.id,
           status: "authorized"
+        }) |> Repo.insert!
+
+        Status.changeset(%Status{}, %{
+          name: "Close",
+          position: -1,
+          enable: true,
+          goal_id: goal.id
+        }) |> Repo.insert!
+        Status.changeset(%Status{}, %{
+          name: "ToDo",
+          position: 1,
+          enable: true,
+          goal_id: goal.id
+        }) |> Repo.insert!
+        Status.changeset(%Status{}, %{
+          name: "Doing",
+          position: 2,
+          enable: true,
+          goal_id: goal.id
+        }) |> Repo.insert!
+        Status.changeset(%Status{}, %{
+          name: "Done",
+          position: 3,
+          enable: true,
+          goal_id: goal.id
         }) |> Repo.insert!
 
         [user, goal]
