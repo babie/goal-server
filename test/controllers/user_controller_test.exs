@@ -45,11 +45,11 @@ defmodule GoalServer.UserControllerTest do
                   |> Repo.preload([:goal])
     assert membership
 
-    root = membership.goal
+    root = membership.goal |> Repo.preload([:statuses])
     assert root
     assert redirected_to(conn) == goal_path(conn, :show_html, root.id)
 
-    statuses = GoalServer.Status |> Repo.all |> Enum.sort(&(&1.position < &2.position)) |> Enum.map(&(&1.name))
+    statuses = root.statuses |> Enum.sort(&(&1.position < &2.position)) |> Enum.map(&(&1.name))
 
     assert statuses == ["Close", "ToDo", "Doing", "Done"]
   end

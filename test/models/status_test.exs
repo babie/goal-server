@@ -3,7 +3,7 @@ defmodule GoalServer.StatusTest do
 
   alias GoalServer.Status
 
-  @valid_attrs %{enable: true, name: "some content", position: 42}
+  @valid_attrs %{enable: true, name: "some content", position: 42, goal_id: 42}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do

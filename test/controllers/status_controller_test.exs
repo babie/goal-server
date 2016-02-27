@@ -1,12 +1,14 @@
 defmodule GoalServer.StatusControllerTest do
   use GoalServer.ConnCase
+  import GoalServer.Fixtures
 
   alias GoalServer.Status
   @valid_attrs %{enable: true, name: "some content", position: 42}
   @invalid_attrs %{}
 
   setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+    goal = fixture(:root)
+    {:ok, conn: put_req_header(conn, "accept", "application/json"), goal: goal}
   end
 
   test "lists all entries on index", %{conn: conn} do
@@ -30,8 +32,9 @@ defmodule GoalServer.StatusControllerTest do
     end
   end
 
-  test "creates and renders resource when data is valid", %{conn: conn} do
-    conn = post conn, status_path(conn, :create), status: @valid_attrs
+  test "creates and renders resource when data is valid", %{conn: conn, goal: goal} do
+    attrs = Map.merge(@valid_attrs, %{goal_id: goal.id})
+    conn = post conn, status_path(conn, :create), status: attrs
     assert json_response(conn, 201)["data"]["id"]
     assert Repo.get_by(Status, @valid_attrs)
   end
@@ -41,11 +44,12 @@ defmodule GoalServer.StatusControllerTest do
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-  test "updates and renders chosen resource when data is valid", %{conn: conn} do
-    status = Repo.insert! %Status{}
-    conn = put conn, status_path(conn, :update, status), status: @valid_attrs
+  test "updates and renders chosen resource when data is valid", %{conn: conn, goal: goal} do
+    status = Repo.insert! %Status{goal_id: goal.id}
+    attrs = Map.merge(@valid_attrs, %{goal_id: goal.id})
+    conn = put conn, status_path(conn, :update, status), status: attrs
     assert json_response(conn, 200)["data"]["id"]
-    assert Repo.get_by(Status, @valid_attrs)
+    assert Repo.get_by(Status, attrs)
   end
 
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn} do

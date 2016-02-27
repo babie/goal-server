@@ -10,7 +10,7 @@ defmodule GoalServer.Status do
     timestamps
   end
 
-  @required_fields ~w(name position enable)
+  @required_fields ~w(name position enable goal_id)
   @optional_fields ~w()
 
   @doc """
