@@ -88,7 +88,7 @@ defmodule GoalServer.Goal.Commands do
           old_position > new_position ->
             update_positions_on_move_up(old_parent_id, old_position, new_position)
           old_position == new_position ->
-            # noghing to do
+            "nodthing to do" # noghing to do
         end
       end
     else

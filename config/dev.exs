@@ -41,3 +41,8 @@ config :goal_server, GoalServer.Repo,
   database: "goal_server_dev",
   hostname: "localhost",
   pool_size: 10
+
+config :mix_test_watch,
+  tasks: [
+    "coveralls"
+  ]
