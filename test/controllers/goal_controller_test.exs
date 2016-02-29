@@ -72,7 +72,7 @@ defmodule GoalServer.GoalControllerTest do
   end
 
   test "updates and renders chosen resource when data is valid", %{conn: conn, children: [_, c2, _]} do
-    attrs = %{title: "bar", body: "hoge", status_id: 0, parent_id: c2.id, position: c2.position}
+    attrs = %{title: "bar", body: "hoge", status_id: 0, parent_id: c2.parent_id, position: c2.position}
     conn = put conn, goal_path(conn, :update, c2), goal: attrs
 
     id = json_response(conn, 200)["data"]["id"]
@@ -80,6 +80,11 @@ defmodule GoalServer.GoalControllerTest do
 
     goal = Repo.get(Goal, id)
     assert goal
+    assert goal.title == "bar"
+    assert goal.body == "hoge"
+    assert goal.status_id == 0
+    assert goal.parent_id == c2.parent_id
+    assert goal.position == c2.position
   end
 
   test "does not update chosen resource and renders errors when data is root", %{conn: conn, root: root} do
