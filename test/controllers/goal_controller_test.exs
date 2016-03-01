@@ -22,6 +22,15 @@ defmodule GoalServer.GoalControllerTest do
     {:ok, conn: put_req_header(conn, "accept", "application/json"), user: user, root: root, children: children}
   end
 
+  test "lists all entries on index", %{conn: conn, user: user} do
+    conn = conn
+      |> with_session_and_flash
+      |> put_session(:current_user, user)
+      |> action(:index_html)
+    #conn = get conn, goal_path(conn, :index_html)
+    assert html_response(conn, 200) =~ "Hello"
+  end
+
   test "lists all entries on index", %{conn: conn, user: user, root: root} do
     conn = conn
       |> with_session_and_flash
