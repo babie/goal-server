@@ -22,7 +22,7 @@ defmodule GoalServer.GoalControllerTest do
     {:ok, conn: put_req_header(conn, "accept", "application/json"), user: user, root: root, children: children}
   end
 
-  test "lists all entries on index", %{conn: conn, user: user} do
+  test "lists all entries on index_html", %{conn: conn, user: user} do
     conn = conn
       |> with_session_and_flash
       |> put_session(:current_user, user)
