@@ -42,6 +42,13 @@ defmodule GoalServer.GoalControllerTest do
     assert json_ids == ids
   end
 
+  test "shows chosen resource on show_html", %{conn: conn, children: [_, c2, _]} do
+    conn = conn
+      |> action(:show_html, %{"id" => c2.id})
+    #conn = get conn, goal_path(conn, :show_html, c2)
+    assert html_response(conn, 200) =~ "Hello"
+  end
+
   test "shows chosen resource", %{conn: conn, root: root} do
     conn = get conn, goal_path(conn, :show, root)
     assert json_response(conn, 200)["data"] == %{"id" => root.id,
