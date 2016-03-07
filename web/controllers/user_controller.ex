@@ -85,7 +85,7 @@ defmodule GoalServer.UserController do
         |> delete_session(:auth)
         |> put_session(:current_user, user)
         |> put_flash(:info, "User created successfully.")
-        |> redirect(to: goal_path(conn, :show_html, root.id))
+        |> redirect(to: goal_path(conn, :index_html))
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end

@@ -37,6 +37,8 @@ defmodule GoalServer.UserControllerTest do
       |> put_session(:auth, @valid_auth)
       |> action(:create, %{"user" => @valid_attrs})
     #conn = post conn, user_path(conn, :create), user: @valid_attrs
+    assert redirected_to(conn) == goal_path(conn, :index_html)
+
     user = Repo.get_by(User, @valid_attrs)
     assert user
 
@@ -47,7 +49,6 @@ defmodule GoalServer.UserControllerTest do
 
     root = membership.goal |> Repo.preload([:statuses])
     assert root
-    assert redirected_to(conn) == goal_path(conn, :show_html, root.id)
 
     statuses = root.statuses |> Enum.sort(&(&1.position < &2.position)) |> Enum.map(&(&1.name))
 
