@@ -25,11 +25,10 @@ defmodule GoalServer.AuthController do
     provider = Repo.get_by(Provider, name: auth.provider, uid: auth.uid)
     if provider do
       provider = provider
-      |> Repo.preload([user: [:roots]])
-      root = provider.user.roots |> List.first
+      |> Repo.preload([:user])
       conn
       |> put_session(:current_user, provider.user)
-      |> redirect(to: goal_path(conn, :show_html, root.id))
+      |> redirect(to: goal_path(conn, :index_html))
     else
       conn
       |> put_flash(:info, "Successfully authenticated.")
