@@ -74,7 +74,7 @@ defmodule GoalServer.GoalController do
     dest_parent = Repo.get!(Goal, dest_parent_id)
     dest_goal = Repo.get_by(Goal, parent_id: dest_parent_id, position: dest_position)
     if dest_parent && dest_goal == nil do
-      dest_positiong = "0"
+      dest_position = "0"
     end
 
      case Goal.Commands.copy(target_goal, String.to_integer(dest_parent_id), String.to_integer(dest_position)) do
