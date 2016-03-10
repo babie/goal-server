@@ -280,6 +280,7 @@ class ItemTreeComponent extends Component {
         return (
           <ItemTreeComponent
             key={n.model.id}
+            ref={n.model.id}
             parent={this}
             tree={this.props.tree} 
             node={n}
