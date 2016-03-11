@@ -155,9 +155,7 @@ defmodule GoalServer.Goal.Commands do
     Repo.transaction(fn ->
       update_positions_on_insert(parent_id, position)
 
-      SQL.query!(
-        Repo,
-        """
+      sql = """
         INSERT INTO
           goals (
             id,
@@ -216,7 +214,11 @@ defmodule GoalServer.Goal.Commands do
         RETURNING
           *
         ;
-        """,
+      """ |> String.replace(~r/\n +/, " ")
+
+      SQL.query!(
+        Repo,
+        sql,
         [parent_id, position, goal.id]
       ) |> load_into(Goal)
     end)
