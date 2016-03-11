@@ -214,7 +214,7 @@ defmodule GoalServer.Goal.Commands do
         RETURNING
           *
         ;
-      """ |> String.replace(~r/\n +/, " ")
+      """ |> String.replace(~r/\n +/, " ") |> String.strip
 
       SQL.query!(
         Repo,
