@@ -36,6 +36,7 @@ class ItemTreeComponent extends Component {
     let sibling = null;
     let parent = null;
 
+    event.preventDefault();
     const detector = new KeyStringDetector();
     switch (detector.detect(event)) {
       case 'J':
