@@ -319,7 +319,7 @@ class ItemTreeComponent extends Component {
           <input
             ref="editTitleField"
             className="edit"
-            value={this.props.editTitle}
+            value={this.state.editTitle}
             onBlur={this.handleEditTitleBlur.bind(this)}
             onChange={this.handleEditTitleChange.bind(this)}
             onKeyDown={this.handleEditTitleKeyDown.bind(this)}
