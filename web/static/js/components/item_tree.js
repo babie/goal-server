@@ -147,7 +147,7 @@ class ItemTreeComponent extends Component {
             break;
         }
         const tmpGoal = this.props.tree.parse({
-          id: "new",
+          id: -1,
           title: event.target.value.trim(),
           body: null,
           parent_id: parent_id,
