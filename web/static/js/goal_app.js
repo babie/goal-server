@@ -12,6 +12,15 @@ class GoalApp extends Flux {
         return state;
       });
     });
+
+    this.on("clipboard:copy", (node) => {
+      const clipboard = _.clone(this.state.clipboard);
+      clipboard.push(node);
+      const state = _.set(this.state, "clipboard", clipboard);
+      this.update((s) => {
+        return state;
+      })
+    })
   }
   render(state) {
     return <GoalAppComponent {...state}/>;

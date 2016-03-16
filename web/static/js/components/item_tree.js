@@ -104,6 +104,9 @@ class ItemTreeComponent extends Component {
           }
         }
         break;
+      case 'C':
+        this.dispatch("clipboard:copy", current);
+        break;
     }
   }
 

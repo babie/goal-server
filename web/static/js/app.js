@@ -224,6 +224,7 @@ page('/goals', function(ctx, next) {
         self_and_ancestor_ids: [roots[0].model.id],
         tree: trees[0],
         root: roots[0],
+        clipboard: [], // LIFO queue
       };
       app.update(initState => (state));
     });
