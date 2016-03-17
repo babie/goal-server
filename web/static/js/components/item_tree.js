@@ -107,6 +107,9 @@ class ItemTreeComponent extends Component {
       case 'C':
         this.dispatch("clipboard:copy", current);
         break;
+      case 'V':
+        this.dispatch("clipboard:paste", current);
+        break;
     }
   }
 
