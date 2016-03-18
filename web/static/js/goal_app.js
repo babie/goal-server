@@ -22,11 +22,11 @@ class GoalApp extends Flux {
       });
     });
 
-    this.on("clipboard:paste", (dest) => {
+    this.on("clipboard:paste", (dest, newPosition) => {
       const clipboard = _.clone(this.state.clipboard);
       const target = clipboard.pop();
       const parent = dest.parent;
-      const position = dest.model.position + 1;
+      const position = dest.model.position + (newPosition === "before" ? 0 : 1);
 
       const tmpGoal = this.state.tree.parse({
         id: -1,
